@@ -12,8 +12,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Lykke.Common" Version="6.8.4" />
-    <PackageReference Include="Neo" Version="2.7.5" />
+    <PackageReference Include="Lykke.Common" Version="7.0.3" />
+    <PackageReference Include="Lykke.SettingsReader" Version="4.0.1" />
+    <PackageReference Include="Neo" Version="2.8.0" />
   </ItemGroup>
 
 </Project>

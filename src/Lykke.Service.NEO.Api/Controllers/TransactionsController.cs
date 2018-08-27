@@ -9,14 +9,15 @@ using Microsoft.AspNetCore.Mvc;
 namespace Lykke.Service.NEO.Api.Controllers
 {
     [Route("api/[controller]")]
-    public class TransactionController : Controller
+    public class TransactionsController : Controller
     {
         private readonly INeoService _neoService;
 
-        public TransactionController(INeoService neoService)
+        public TransactionsController(INeoService neoService)
         {
             _neoService = neoService;
         }
+
 
         //[HttpPost("broadcast")]
         //[ProducesResponseType(StatusCodes.Status200OK)]

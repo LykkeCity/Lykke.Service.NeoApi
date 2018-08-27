@@ -29,7 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Lykke.Common" Version="6.8.4" />
+    <PackageReference Include="Lykke.Common" Version="7.0.3" />
   </ItemGroup>
 
   <ItemGroup>

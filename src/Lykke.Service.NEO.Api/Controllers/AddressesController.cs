@@ -9,22 +9,22 @@ using Microsoft.AspNetCore.Mvc;
 namespace Lykke.Service.NEO.Api.Controllers
 {
     [Route("api/[controller]")]
-    public class AddressController : Controller
+    public class AddressesController : Controller
     {
         private readonly INeoService _neoService;
 
-        public AddressController(INeoService neoService)
+        public AddressesController(INeoService neoService)
         {
             _neoService = neoService;
         }
-
+        
         [HttpGet("{address}/validity")]
         [ProducesResponseType(typeof(AddressValidationResponse), (int)HttpStatusCode.OK)]
-        public IActionResult GetAddressValidity([Required] string address, [Required] string name)
+        public IActionResult GetAddressValidity([FromRoute] string address)
         {
             return Ok(new AddressValidationResponse()
             {
-                IsValid = _neoService.GetNeoAddress(address: address, name: name) != null
+                IsValid = _neoService.IsValidAddress(address: address)
             });
         }
 

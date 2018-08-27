@@ -1,6 +1,8 @@
 ﻿using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Common.Log;
+using Lykke.Service.NEO.Api.AzureRepositories.Addresses;
+using Lykke.Service.NEO.Api.Core.Domain.Addresses;
 using Lykke.Service.NEO.Api.Core.Services;
 using Lykke.Service.NEO.Api.Core.Settings;
 using Lykke.Service.NEO.Api.Core.Settings.ServiceSettings;
@@ -48,6 +50,11 @@ namespace Lykke.Service.NEO.Api.Modules
                 .As<IShutdownManager>();
 
             // TODO: Add your dependencies here
+
+            builder.RegisterType<AddressRepository>()
+               .As<IAddressRepository>()
+               .WithParameter(TypedParameter.From(_settings.Nested(s => s.Db.DataConnString)))
+               .SingleInstance();
 
             builder.RegisterType<NeoService>()
                 .As<INeoService>()
