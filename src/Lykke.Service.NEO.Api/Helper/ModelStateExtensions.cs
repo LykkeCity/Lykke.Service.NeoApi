@@ -14,7 +14,6 @@ namespace Lykke.Service.NEO.Api.Helper
 {
     public static class ModelStateExtensions
     {
-
         public static bool IsValidAddress(this ModelStateDictionary self, INeoService neoService, string address)
         {
             if (neoService.ValidateAddressAsync(address))

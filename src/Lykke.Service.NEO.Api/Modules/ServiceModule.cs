@@ -2,7 +2,11 @@
 using Autofac.Extensions.DependencyInjection;
 using Common.Log;
 using Lykke.Service.NEO.Api.AzureRepositories.Addresses;
+using Lykke.Service.NEO.Api.AzureRepositories.History;
+using Lykke.Service.NEO.Api.AzureRepositories.Operations;
 using Lykke.Service.NEO.Api.Core.Domain.Addresses;
+using Lykke.Service.NEO.Api.Core.Domain.History;
+using Lykke.Service.NEO.Api.Core.Domain.Operations;
 using Lykke.Service.NEO.Api.Core.Services;
 using Lykke.Service.NEO.Api.Core.Settings;
 using Lykke.Service.NEO.Api.Core.Settings.ServiceSettings;
@@ -55,6 +59,16 @@ namespace Lykke.Service.NEO.Api.Modules
                .As<IAddressRepository>()
                .WithParameter(TypedParameter.From(_settings.Nested(s => s.Db.DataConnString)))
                .SingleInstance();
+
+            builder.RegisterType<HistoryRepository>()
+                .As<IHistoryRepository>()
+                .WithParameter(TypedParameter.From(_settings.Nested(s => s.Db.DataConnString)))
+                .SingleInstance();
+
+            builder.RegisterType<OperationRepository>()
+                .As<IOperationRepository>()
+                .WithParameter(TypedParameter.From(_settings.Nested(s => s.Db.DataConnString)))
+                .SingleInstance();
 
             builder.RegisterType<NeoService>()
                 .As<INeoService>()

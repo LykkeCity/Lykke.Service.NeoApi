@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using Common.Log;
 using Lykke.Service.NEO.Api.Core;
 using Lykke.Service.NEO.Api.Core.Domain.Addresses;
+using Lykke.Service.NEO.Api.Core.Domain.History;
+using Lykke.Service.NEO.Api.Core.Domain.Operations;
 using Lykke.Service.NEO.Api.Core.Settings;
 using Lykke.Service.NEO.Api.Services.Helpers;
 using Lykke.Service.NEO.Api.Services.Models;
@@ -26,12 +28,18 @@ namespace Lykke.Service.NEO.Api.Services
         protected LocalNode LocalNode { get; private set; }
         private readonly ILog _log; 
         private readonly IAddressRepository _addressRepository;
+        private readonly IOperationRepository _operationRepository;
+        private readonly IHistoryRepository _historyRepository;
 
         public NeoService(ILog log, 
-            IAddressRepository addressRepository)
+            IAddressRepository addressRepository,
+            IOperationRepository operationRepository,
+            IHistoryRepository historyRepository)
         {
             _log = log;
             _addressRepository = addressRepository;
+            _operationRepository = operationRepository;
+            _historyRepository = historyRepository;
         }
 
         public Asset GetAsset(string assetId, string password, string name)
@@ -177,7 +185,7 @@ namespace Lykke.Service.NEO.Api.Services
             }
             return addresses;
         }
-
+        
         public List<Keys> ListPublicKeys(string password, string name)
         {
             var walletPath = $"{Settings.Default.Paths.WalletPath}\\{name}.json";
@@ -238,6 +246,35 @@ namespace Lykke.Service.NEO.Api.Services
         {
             return await _addressRepository.DeleteBalanceAddressIfExistsAsync(address);
         }
-        
+
+        public async Task<bool> TryCreateHistoryAddressAsync(string address, HistoryAddressCategory category)
+        {
+            ImportAddress(address);
+
+            return await _addressRepository.CreateHistoryAddressIfNotExistsAsync(address, category);
+        }
+
+        public async Task<bool> TryDeleteHistoryAddressAsync(string address, HistoryAddressCategory category)
+        {
+            return await _addressRepository.DeleteHistoryAddressIfExistsAsync(address, category);
+        }
+
+        public async Task<IOperation> GetOperationAsync(Guid operationId, bool loadItems = true)
+        {
+            return await _operationRepository.GetAsync(operationId, loadItems);
+        }
+
+        public async Task<IEnumerable<IHistoryItem>> GetHistoryAsync(HistoryAddressCategory category, string address, string afterHash = null, int take = 100)
+        {
+            if (await _addressRepository.IsHistoryAddressExistsAsync(address, category))
+            {
+                return await _historyRepository.GetByAddressAsync(category, address, afterHash, take);
+            }
+            else
+            {
+                return new IHistoryItem[0];
+            }
+        }
+
     }
 }

@@ -64,12 +64,14 @@ namespace Lykke.Service.NEO.Api.Services
     internal class RPCSettings
     {
         public ushort Port { get; }
+        public string Url { get; }
         public string SslCert { get; }
         public string SslCertPassword { get; }
 
         public RPCSettings(IConfigurationSection section)
         {
             this.Port = ushort.Parse(section.GetSection("Port").Value);
+            this.Url = section.GetSection("Url").Value;
             this.SslCert = section.GetSection("SslCert").Value;
             this.SslCertPassword = section.GetSection("SslCertPassword").Value;
         }

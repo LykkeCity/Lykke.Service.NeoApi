@@ -9,14 +9,11 @@ namespace Lykke.Service.NEO.Api.Services.Helpers
 {
     public static class JsonRpcHelper
     {
-        private static readonly string Url = "http://104.40.151.227:20332";
+        private static readonly string Url = $"{Settings.Default.RPC.Url}:{Settings.Default.RPC.Port}";// "http://104.40.151.227:20332";
         public static JObject InvokeMethod(string a_sMethod, params object[] a_params)
-        {
-            //var ret = InvokeMethod("getblockhash", index);
-
+        {            
             var webRequest = (HttpWebRequest)WebRequest.Create(Url);
             //webRequest.Credentials = Credentials;
-
             webRequest.ContentType = "application/json-rpc";
             webRequest.Method = "POST";
 
@@ -55,7 +52,7 @@ namespace Lykke.Service.NEO.Api.Services.Helpers
             catch (WebException we)
             {
                 //inner exception is socket
-                //{"A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond 23.23.246.5:8332"}
+                //{"A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond 104.40.151.227:20332"}
                 throw;
             }
             WebResponse webResponse = null;
