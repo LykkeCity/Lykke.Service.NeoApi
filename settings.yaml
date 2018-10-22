@@ -1,0 +1,33 @@
+NeoApiService:
+    Db:
+        LogsConnString:
+            settings-key: NeoApiService-LogsConnString
+            types:
+              - AzureTableStorage
+        DataConnString:
+            settings-key: NeoApiService-DataConnString
+            types:
+              - AzureTableStorage
+    NeoScanUrl:
+        settings-key: NeoApiService-NeoScanUrl
+    FixedFee:
+        settings-key: NeoApiService-FixedFee
+    ConfirmationLevel:
+        settings-key: NeoApiService-ConfirmationLevel
+    UpdateBalancesTimerPeriod:
+        settings-key: NeoApiService-UpdateBalancesTimerPeriod
+    DetectTransactionsTimerPeriod:
+        settings-key: NeoApiService-DetectTransactionsTimerPeriod
+SlackNotifications:
+    AzureQueue:
+        ConnectionString:
+            settings-key: SlackNotificationsConnString
+            types:
+                - AzureTableStorage
+        QueueName:
+            settings-key: SlackQueueName
+MonitoringServiceClient:
+    MonitoringServiceUrl:
+        settings-key: MonitoringServiceUrl
+
+        
