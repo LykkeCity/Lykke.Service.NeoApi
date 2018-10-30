@@ -14,13 +14,11 @@ namespace Lykke.Service.NeoApi.AzureRepositories.Binders
 {
     public class AzureRepositoriesModule : Module
     {
-        private readonly NeoApiSettings _settings;
         private readonly IReloadingManager<NeoApiSettings> _settingsManager;
 
-        public AzureRepositoriesModule(NeoApiSettings settings, IReloadingManager<NeoApiSettings> settingsManager)
+        public AzureRepositoriesModule(IReloadingManager<AppSettings> settingsManager)
         {
-            _settings = settings;
-            _settingsManager = settingsManager;
+            _settingsManager = settingsManager.Nested(p=>p.NeoApiService);
         }
 
         protected override void Load(ContainerBuilder builder)

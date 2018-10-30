@@ -5,6 +5,7 @@ using Lykke.Service.NeoApi.Domain.Services.Transaction;
 using Lykke.Service.NeoApi.Domain.Settings;
 using Lykke.Service.NeoApi.DomainServices.Address;
 using Lykke.Service.NeoApi.DomainServices.Transaction;
+using Lykke.SettingsReader;
 using NeoModules.JsonRpc.Client;
 using NeoModules.Rest.Interfaces;
 using NeoModules.Rest.Services;
@@ -16,9 +17,9 @@ namespace Lykke.Service.NeoApi.DomainServices.Binders
     {
         private readonly NeoApiSettings _settings;
 
-        public CommonServicesModule(NeoApiSettings settings)
+        public CommonServicesModule(IReloadingManager<AppSettings> settings)
         {
-            _settings = settings;
+            _settings = settings.CurrentValue.NeoApiService;
         }
 
         protected override void Load(ContainerBuilder builder)
