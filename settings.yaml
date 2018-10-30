@@ -10,6 +10,8 @@ NeoApiService:
               - AzureTableStorage
     NeoScanUrl:
         settings-key: NeoApiService-NeoScanUrl
+    NodeUrl:
+        settings-key: NeoApiService-NodeUrl
     FixedFee:
         settings-key: NeoApiService-FixedFee
     ConfirmationLevel:

@@ -1,5 +1,6 @@
 ﻿using System;
 using JetBrains.Annotations;
+using Lykke.SettingsReader.Attributes;
 
 namespace Lykke.Service.NeoApi.Domain.Settings
 {
@@ -8,6 +9,7 @@ namespace Lykke.Service.NeoApi.Domain.Settings
     {
         public DbSettings Db { get; set; }
 
+        [HttpCheck("/")]
         public string NeoScanUrl { get; set; }
 
         public string NodeUrl { get; set; }

@@ -15,7 +15,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Lykke.Service.NeoApi.Controllers
 {
-    public class OperationsController:Controller
+    public class TransactionsController:Controller
     {
         private readonly IOperationRepository _operationRepository;
         private readonly IAddressValidator _addressValidator;
@@ -24,7 +24,7 @@ namespace Lykke.Service.NeoApi.Controllers
         private readonly IObservableOperationRepository _observableOperationRepository;
         private readonly ITransactionBuilder _transactionBuilder;
 
-        public OperationsController(IAddressValidator addressValidator, 
+        public TransactionsController(IAddressValidator addressValidator, 
             IOperationRepository operationRepository, 
             ITransactionBroadcaster transactionBroadcaster, 
             FeeSettings feeSettings,
