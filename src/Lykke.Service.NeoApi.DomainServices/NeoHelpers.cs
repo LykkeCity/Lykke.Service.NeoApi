@@ -1,4 +1,4 @@
-﻿using Neo;
+﻿using NeoModules.Core;
 using NeoModules.NEP6.Helpers;
 
 namespace Lykke.Service.NeoApi.DomainServices

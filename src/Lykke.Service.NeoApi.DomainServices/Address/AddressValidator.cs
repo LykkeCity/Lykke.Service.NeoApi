@@ -1,6 +1,6 @@
 ﻿using System;
 using Lykke.Service.NeoApi.Domain.Services.Address;
-using Neo.Wallets;
+using NeoModules.Core.KeyPair;
 
 namespace Lykke.Service.NeoApi.DomainServices.Address
 {
