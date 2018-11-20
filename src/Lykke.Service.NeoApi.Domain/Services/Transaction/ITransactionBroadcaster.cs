@@ -5,6 +5,6 @@ namespace Lykke.Service.NeoApi.Domain.Services.Transaction
 {
     public interface ITransactionBroadcaster
     {
-        Task BroadcastTransaction(string signedTransaction, OperationAggregate aggregate);
+        Task BroadcastTransaction(NeoModules.NEP6.Transactions.Transaction signedTransaction, OperationAggregate aggregate);
     }
 }

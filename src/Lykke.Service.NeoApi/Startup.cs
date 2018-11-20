@@ -3,6 +3,8 @@ using Lykke.Sdk;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using AsyncFriendlyStackTrace;
+using Lykke.Common.Api.Contract.Responses;
 using Lykke.Service.NeoApi.AzureRepositories.Binders;
 using Lykke.Service.NeoApi.Domain.Settings;
 using Lykke.Service.NeoApi.DomainServices.Binders;
@@ -36,7 +38,8 @@ namespace Lykke.Service.NeoApi
                     moduleRegistration.RegisterModule<AzureRepositoriesModule>();
                     moduleRegistration.RegisterModule<CommonServicesModule>();
                 };
-            });
+                
+           });
         }
 
         [UsedImplicitly]
@@ -45,6 +48,7 @@ namespace Lykke.Service.NeoApi
             app.UseLykkeConfiguration(options =>
             {
                 options.SwaggerOptions = _swaggerOptions;
+                options.DefaultErrorHandler = ex => new ErrorResponse {ErrorMessage = ex.ToAsyncString()};
             });
         }
     }

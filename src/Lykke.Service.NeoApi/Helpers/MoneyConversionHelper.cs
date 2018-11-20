@@ -1,5 +1,4 @@
-﻿using System;
-using Lykke.Service.BlockchainApi.Contract;
+﻿using Lykke.Service.BlockchainApi.Contract;
 using Lykke.Service.NeoApi.Domain;
 
 namespace Lykke.Service.NeoApi.Helpers

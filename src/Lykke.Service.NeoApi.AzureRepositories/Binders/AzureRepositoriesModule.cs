@@ -1,6 +1,6 @@
 ﻿using Autofac;
 using AzureStorage.Tables;
-using Lykke.Logs;
+using Lykke.Common.Log;
 using Lykke.Service.NeoApi.AzureRepositories.Operation;
 using Lykke.Service.NeoApi.AzureRepositories.Transaction;
 using Lykke.Service.NeoApi.AzureRepositories.Wallet;
@@ -29,35 +29,35 @@ namespace Lykke.Service.NeoApi.AzureRepositories.Binders
                     AzureTableStorage<OperationEntity>.Create(
                         connString,
                         "NeoOperations",
-                        p.Resolve<LogFactory>())))
+                        p.Resolve<ILogFactory>())))
                 .As<IOperationRepository>();
 
             builder.Register(p => new ObservableOperationRepository(
                     AzureTableStorage<ObservableOperationEntity>.Create(
                         connString,
                         "NeoObservableOperations",
-                        p.Resolve<LogFactory>())))
+                        p.Resolve<ILogFactory>())))
                 .As<IObservableOperationRepository>();
 
             builder.Register(p => new UnconfirmedTransactionRepository(
                     AzureTableStorage<UnconfirmedTransactionEntity>.Create(
                         connString,
                         "NeoUnconfirmedTransactions",
-                        p.Resolve<LogFactory>())))
+                        p.Resolve<ILogFactory>())))
                 .As<IUnconfirmedTransactionRepository>();
             
             builder.Register(p => new ObservableWalletRepository(
                     AzureTableStorage<ObservableWalletEntity>.Create(
                         connString,
                         "NeoObservableWallets",
-                        p.Resolve<LogFactory>())))
+                        p.Resolve<ILogFactory>())))
                 .As<IObservableWalletRepository>();
             
             builder.Register(p => new WalletBalanceRepository(
                     AzureTableStorage<WalletBalanceEntity>.Create(
                         connString,
                         "NeoWalletBalances",
-                        p.Resolve<LogFactory>())))
+                        p.Resolve<ILogFactory>())))
                 .As<IWalletBalanceRepository>();
         }
     }

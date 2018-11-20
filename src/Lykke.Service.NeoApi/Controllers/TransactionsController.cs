@@ -11,6 +11,7 @@ using Lykke.Service.NeoApi.Domain.Services.Transaction;
 using Lykke.Service.NeoApi.Domain.Services.Transaction.Exceptions;
 using Lykke.Service.NeoApi.DomainServices.Transaction;
 using Lykke.Service.NeoApi.Helpers;
+using Lykke.Service.NeoApi.Helpers.Transaction;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Lykke.Service.NeoApi.Controllers
@@ -97,9 +98,10 @@ namespace Lykke.Service.NeoApi.Controllers
                 request.IncludeFee, 
                 _feeSettings.FixedFee);
 
+            
             return Ok(new BuildTransactionResponse
             {
-                TransactionContext = tx
+                TransactionContext = TransactionSerializer.Serialize(tx)
             });
         }
 
@@ -118,9 +120,12 @@ namespace Lykke.Service.NeoApi.Controllers
                 return BadRequest($"Operation {request.OperationId} not found");
             }
 
+            //todo handle invalid format string
+            var tx = TransactionSerializer.Deserialize(request.SignedTransaction);
+
             try
             {
-                await _transactionBroadcaster.BroadcastTransaction(request.SignedTransaction, aggregate);
+                await _transactionBroadcaster.BroadcastTransaction(tx, aggregate);
             }
             catch (TransactionAlreadyBroadcastedException)
             {

@@ -89,8 +89,8 @@ namespace Lykke.Job.NeoApi
                 var modules = new IModule[]
                 {
                     new JobModule(appSettings.NeoApiService),
-                    new CommonServicesModule(appSettings.NeoApiService), 
-                    new AzureRepositoriesModule(appSettings.NeoApiService, settingsManager.Nested(x => x.NeoApiService)), 
+                    new CommonServicesModule(settingsManager), 
+                    new AzureRepositoriesModule(settingsManager), 
                 };
 
                 foreach (var module in modules)

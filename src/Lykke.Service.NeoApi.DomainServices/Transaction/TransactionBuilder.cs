@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Threading.Tasks;
+using Lykke.Service.NeoApi.Domain;
 using Lykke.Service.NeoApi.Domain.Services.Transaction;
 using NeoModules.Core;
 using NeoModules.NEP6.Transactions;
@@ -22,7 +23,7 @@ namespace Lykke.Service.NeoApi.DomainServices.Transaction
             _restService = restService;
         }
 
-        public Task<string> BuildNeoContractTransactionAsync(string from, string to, decimal amount, bool includeFee, decimal fixedFee)
+        public Task<NeoModules.NEP6.Transactions.Transaction> BuildNeoContractTransactionAsync(string from, string to, decimal amount, bool includeFee, decimal fixedFee)
         {
             if (amount <= fixedFee)
             {
@@ -45,7 +46,7 @@ namespace Lykke.Service.NeoApi.DomainServices.Transaction
                     {
                         AssetId = Utils.NeoToken,
                         ScriptHash = to.ToScriptHash(),
-                        Value = new BigDecimal(new BigInteger(amount), 8)
+                        Value = new BigDecimal(new BigInteger(amount), Constants.Assets.Neo.Accuracy)
                     }
                 }.Select(p => p.ToTxOutput()).ToArray(),
                 Witnesses = new Witness[0]
@@ -53,7 +54,7 @@ namespace Lykke.Service.NeoApi.DomainServices.Transaction
 
             tx = MakeTransaction(tx, from.ToScriptHash(), changeAddress: from.ToScriptHash(), fee: Fixed8.FromDecimal(fixedFee));
 
-            return Task.FromResult(tx.ToHexString());
+            return Task.FromResult((NeoModules.NEP6.Transactions.Transaction)tx);
         }
 
         //used code from https://github.com/CityOfZion/NeoModules/blob/master/src/NeoModules.NEP6/AccountSignerTransactionManager.cs 
