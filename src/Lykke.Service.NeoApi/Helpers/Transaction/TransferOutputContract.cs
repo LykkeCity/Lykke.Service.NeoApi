@@ -25,7 +25,7 @@ namespace Lykke.Service.NeoApi.Helpers.Transaction
         {
             return new TransferOutput
             {
-                AssetId = UIntBase.Parse(AssetId),
+                AssetId = UInt256.Parse(AssetId),
                 ScriptHash = UInt160.Parse(ScriptHash),
                 Value = BigDecimal.Parse(Value, 8)
             };

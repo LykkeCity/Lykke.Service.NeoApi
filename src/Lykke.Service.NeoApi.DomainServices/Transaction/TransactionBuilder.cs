@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Numerics;
 using System.Threading.Tasks;
@@ -40,18 +41,19 @@ namespace Lykke.Service.NeoApi.DomainServices.Transaction
             {
                 Attributes = new TransactionAttribute[0],
                 Inputs = new CoinReference[0],
-                Outputs = new List<TransferOutput>()
+                Outputs = new List<TransferOutput>
                 {
                     new TransferOutput
                     {
                         AssetId = Utils.NeoToken,
                         ScriptHash = to.ToScriptHash(),
-                        Value = new BigDecimal(new BigInteger(amount), Constants.Assets.Neo.Accuracy)
+                        Value =  BigDecimal.Parse(amount.ToString("F", CultureInfo.InvariantCulture), 
+                            Constants.Assets.Neo.Accuracy)
                     }
                 }.Select(p => p.ToTxOutput()).ToArray(),
                 Witnesses = new Witness[0]
             };
-
+            
             tx = MakeTransaction(tx, from.ToScriptHash(), changeAddress: from.ToScriptHash(), fee: Fixed8.FromDecimal(fixedFee));
 
             return Task.FromResult((NeoModules.NEP6.Transactions.Transaction)tx);
