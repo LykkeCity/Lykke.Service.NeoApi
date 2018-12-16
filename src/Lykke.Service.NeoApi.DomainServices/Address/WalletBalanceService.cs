@@ -29,20 +29,25 @@ namespace Lykke.Service.NeoApi.DomainServices.Address
             _walletBalanceRepository = walletBalanceRepository;
         }
 
-        public async Task<decimal> UpdateBalance(string address)
+        public async Task<decimal?> UpdateBalance(string address)
         {
-            var lastBlock = await _neoscanService.GetHeight();
+            if(await _observableWalletRepository.Get(address) != null)
+            {
+                var lastBlock = await _neoscanService.GetHeight();
 
-            var neoBalance = (await _neoscanService.GetBalanceAsync(address))?
-                             .Balance?
-                             .FirstOrDefault(p => p.Asset == Constants.Assets.Neo.AssetId)?.Amount ?? 0;
+                var neoBalance = (await _neoscanService.GetBalanceAsync(address))?
+                                 .Balance?
+                                 .FirstOrDefault(p => p.Asset == Constants.Assets.Neo.AssetId)?.Amount ?? 0;
 
-            await _walletBalanceRepository.InsertOrReplace(
-                WalletBalance.Create(address,
-                    balance: (decimal) neoBalance,
-                    updatedAtBlock: (int)lastBlock));
+                await _walletBalanceRepository.InsertOrReplace(
+                    WalletBalance.Create(address,
+                        balance: (decimal)neoBalance,
+                        updatedAtBlock: (int)lastBlock));
 
-            return (decimal) neoBalance;
+                return (decimal)neoBalance;
+            }
+
+            return null;
         }
 
         public async Task Subscribe(string address)

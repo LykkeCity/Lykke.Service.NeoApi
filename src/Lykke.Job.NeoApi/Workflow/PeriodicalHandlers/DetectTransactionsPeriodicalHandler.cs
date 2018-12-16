@@ -72,7 +72,7 @@ namespace Lykke.Job.NeoApi.Workflow.PeriodicalHandlers
 
             var blockchainTx = await _neoscanService.GetTransactionAsync(unconfirmedTx.TxHash);
 
-            if (blockchainTx == null)
+            if (blockchainTx?.BlockHash == null) // library method returns default object in case of not found tx
             {
                 return;
             }
