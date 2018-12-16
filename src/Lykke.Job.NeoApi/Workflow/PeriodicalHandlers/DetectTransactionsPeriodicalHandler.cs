@@ -45,12 +45,11 @@ namespace Lykke.Job.NeoApi.Workflow.PeriodicalHandlers
 
         public async Task Execute()
         {
-            var lastBlockHeight = await _neoscanService.GetHeight();
             foreach (var unconfirmedTx in await _unconfirmedTransactionRepository.GetAll())
             {
                 try
                 {
-                    await CheckTransaction(unconfirmedTx, (int)lastBlockHeight);
+                    await CheckTransaction(unconfirmedTx);
                 }
                 catch (Exception e)
                 {
@@ -59,7 +58,7 @@ namespace Lykke.Job.NeoApi.Workflow.PeriodicalHandlers
             }
         }
 
-        private async Task CheckTransaction(IUnconfirmedTransaction unconfirmedTx, int lastBlockHeight)
+        private async Task CheckTransaction(IUnconfirmedTransaction unconfirmedTx)
         {
             var operation = await _operationRepository.GetOrDefault(unconfirmedTx.OperationId);
             if (operation == null)
@@ -77,6 +76,7 @@ namespace Lykke.Job.NeoApi.Workflow.PeriodicalHandlers
                 return;
             }
 
+            var lastBlockHeight = await _neoscanService.GetHeight();
             var isCompleted = lastBlockHeight - blockchainTx.BlockHeight >= _confirmationLevel;
 
             if (isCompleted)
