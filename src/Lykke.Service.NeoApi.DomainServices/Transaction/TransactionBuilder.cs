@@ -62,6 +62,7 @@ namespace Lykke.Service.NeoApi.DomainServices.Transaction
         //used code from https://github.com/CityOfZion/NeoModules/blob/master/src/NeoModules.NEP6/AccountSignerTransactionManager.cs 
         private T MakeTransaction<T>(T tx, UInt160 from = null, UInt160 changeAddress = null, Fixed8 fee = default(Fixed8)) where T : NeoModules.NEP6.Transactions.Transaction
         {
+
             fee += tx.SystemFee;
             var payTotal = tx.Outputs.GroupBy(p => p.AssetId, (k, g) => new
             {
