@@ -91,14 +91,14 @@ namespace Lykke.Service.NeoApi.Controllers
             {
                 return StatusCode(409);
             }
-            
-            var tx = await _transactionBuilder.BuildNeoContractTransactionAsync(request.FromAddress, 
+
+            var tx = await _transactionBuilder.BuildNeoContractTransactionAsync(request.FromAddress,
                 request.ToAddress,
                 amount,
-                request.IncludeFee, 
+                request.IncludeFee,
                 _feeSettings.FixedFee);
 
-            
+
             return Ok(new BuildTransactionResponse
             {
                 TransactionContext = TransactionSerializer.Serialize(tx)
@@ -130,10 +130,6 @@ namespace Lykke.Service.NeoApi.Controllers
             catch (TransactionAlreadyBroadcastedException)
             {
                 return new StatusCodeResult(409);
-            }
-            catch (InvalidTransactionException)
-            {
-                return BadRequest("Invalid transaction");
             }
 
             return Ok();

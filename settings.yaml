@@ -19,7 +19,11 @@ NeoApiService:
     UpdateBalancesTimerPeriod:
         settings-key: NeoApiService-UpdateBalancesTimerPeriod
     DetectTransactionsTimerPeriod:
-        settings-key: NeoApiService-DetectTransactionsTimerPeriod
+        settings-key: NeoApiService-DetectTransactionsTimerPeriod       
+    SpentOutputsExpiration:
+        settings-key: NeoApiService-SpentOutputsExpiration
+    SpentOutputsExpirationTimerPeriod:
+        settings-key: NeoApiService-SpentOutputsExpirationTimerPeriod  
 SlackNotifications:
     AzureQueue:
         ConnectionString:

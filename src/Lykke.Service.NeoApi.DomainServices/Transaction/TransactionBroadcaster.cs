@@ -7,6 +7,7 @@ using Lykke.Service.NeoApi.Domain.Repositories.Transaction;
 using Lykke.Service.NeoApi.Domain.Repositories.Transaction.Dto;
 using Lykke.Service.NeoApi.Domain.Services.Transaction;
 using Lykke.Service.NeoApi.Domain.Services.Transaction.Exceptions;
+using Lykke.Service.NeoApi.Domain.Services.TransactionOutputs;
 using NeoModules.JsonRpc.Client;
 using NeoModules.Rest.Interfaces;
 using NeoModules.RPC.Services.Transactions;
@@ -19,22 +20,23 @@ namespace Lykke.Service.NeoApi.DomainServices.Transaction
         private readonly NeoSendRawTransaction _neoRawTransactionSender;
         private readonly IObservableOperationRepository _observableOperationRepository;
         private readonly IUnconfirmedTransactionRepository _unconfirmedTransactionRepository;
-        private readonly ILog _log;
+        private readonly ITransactionOutputsService _transactionOutputsService;
 
         public TransactionBroadcaster(NeoSendRawTransaction neoRawTransactionSender, 
             IUnconfirmedTransactionRepository unconfirmedTransactionRepository,
             IObservableOperationRepository observableOperationRepository,
             INeoscanService neoscanService,
-            ILogFactory logFactory)
+            ITransactionOutputsService transactionOutputsService)
         {
             _neoRawTransactionSender = neoRawTransactionSender;
             _unconfirmedTransactionRepository = unconfirmedTransactionRepository;
             _observableOperationRepository = observableOperationRepository;
             _neoscanService = neoscanService;
-            _log = logFactory.CreateLog(this);
+            _transactionOutputsService = transactionOutputsService;
         }
 
-        public async Task BroadcastTransaction(NeoModules.NEP6.Transactions.Transaction signedTransaction, OperationAggregate aggregate)
+        public async Task BroadcastTransaction(NeoModules.NEP6.Transactions.Transaction signedTransaction, 
+            OperationAggregate aggregate)
         {
             var txHash = signedTransaction.Hash.ToString().Substring(2);
 
@@ -61,6 +63,8 @@ namespace Lykke.Service.NeoApi.DomainServices.Transaction
 
             await _unconfirmedTransactionRepository.InsertOrReplace(
                 UnconfirmedTransaction.Create(aggregate.OperationId, txHash));
+
+            await _transactionOutputsService.CompleteTxOutputs(aggregate.OperationId, signedTransaction);
         }
         
     }

@@ -2,9 +2,11 @@
 using AzureStorage.Tables;
 using Lykke.Common.Log;
 using Lykke.Service.NeoApi.AzureRepositories.Operation;
+using Lykke.Service.NeoApi.AzureRepositories.SpentOutputs;
 using Lykke.Service.NeoApi.AzureRepositories.Transaction;
 using Lykke.Service.NeoApi.AzureRepositories.Wallet;
 using Lykke.Service.NeoApi.Domain.Repositories.Operation;
+using Lykke.Service.NeoApi.Domain.Repositories.Outputs;
 using Lykke.Service.NeoApi.Domain.Repositories.Transaction;
 using Lykke.Service.NeoApi.Domain.Repositories.Wallet;
 using Lykke.Service.NeoApi.Domain.Settings;
@@ -59,6 +61,13 @@ namespace Lykke.Service.NeoApi.AzureRepositories.Binders
                         "NeoWalletBalances",
                         p.Resolve<ILogFactory>())))
                 .As<IWalletBalanceRepository>();
+
+            builder.Register(p => new SpentOutputRepository(
+                    AzureTableStorage<SpentOutputEntity>.Create(
+                        connString,
+                        "NeoSpentOutputs",
+                        p.Resolve<ILogFactory>())))
+                .As<ISpentOutputRepository>();
         }
     }
 }

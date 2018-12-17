@@ -21,5 +21,8 @@ namespace Lykke.Service.NeoApi.Domain.Settings
         public TimeSpan UpdateBalancesTimerPeriod { get; set; }
 
         public TimeSpan DetectTransactionsTimerPeriod { get; set; }
+
+        public TimeSpan SpentOutputsExpiration { get; set; }
+        public TimeSpan SpentOutputsExpirationTimerPeriod { get; set; }
     }
 }

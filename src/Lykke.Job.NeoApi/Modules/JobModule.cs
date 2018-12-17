@@ -1,9 +1,11 @@
 ﻿using Autofac;
 using Common;
+using Lykke.Common.Log;
 using Lykke.Job.NeoApi.Services;
 using Lykke.Job.NeoApi.Workflow.PeriodicalHandlers;
 using Lykke.Sdk;
 using Lykke.Sdk.Health;
+using Lykke.Service.NeoApi.Domain.Repositories.Outputs;
 using Lykke.Service.NeoApi.Domain.Settings;
 
 namespace Lykke.Job.NeoApi.Modules
@@ -42,6 +44,13 @@ namespace Lykke.Job.NeoApi.Modules
             builder.RegisterType<DetectTransactionsPeriodicalHandler>()
                 .WithParameter(TypedParameter.From(_settings.DetectTransactionsTimerPeriod))
                 .WithParameter(TypedParameter.From(_settings.ConfirmationLevel))
+                .As<IStartable>()
+                .As<IStopable>()
+                .SingleInstance();
+
+            builder.Register(p => new RemoveOldSpentOutputsPeriodicalHandler(p.Resolve<ILogFactory>(),
+                    _settings.SpentOutputsExpirationTimerPeriod,
+                    _settings.SpentOutputsExpiration, p.Resolve<ISpentOutputRepository>()))
                 .As<IStartable>()
                 .As<IStopable>()
                 .SingleInstance();

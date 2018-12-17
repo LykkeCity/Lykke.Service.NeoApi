@@ -1,6 +1,5 @@
 ﻿using NeoModules.Core;
 using NeoModules.Core.NVM;
-using NeoModules.NEP6.Helpers;
 
 namespace Lykke.Service.NeoApi.DomainServices
 {
