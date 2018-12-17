@@ -33,6 +33,12 @@ namespace Lykke.Service.NeoApi.Domain.Services.TransactionOutputs
             N = outpoint.PrevIndex;
         }
 
+        public Output(string txHash, int n)
+        {
+            TransactionHash = txHash;
+            N = n;
+        }
+
         public string TransactionHash { get; }
         public int N { get; }
     }

@@ -2,9 +2,11 @@
 using Autofac;
 using Lykke.Service.NeoApi.Domain.Services.Address;
 using Lykke.Service.NeoApi.Domain.Services.Transaction;
+using Lykke.Service.NeoApi.Domain.Services.TransactionOutputs;
 using Lykke.Service.NeoApi.Domain.Settings;
 using Lykke.Service.NeoApi.DomainServices.Address;
 using Lykke.Service.NeoApi.DomainServices.Transaction;
+using Lykke.Service.NeoApi.DomainServices.TransactionOutputs;
 using Lykke.SettingsReader;
 using NeoModules.JsonRpc.Client;
 using NeoModules.Rest.Interfaces;
@@ -46,6 +48,9 @@ namespace Lykke.Service.NeoApi.DomainServices.Binders
 
             builder.RegisterType<WalletBalanceService>()
                 .As<IWalletBalanceService>();
+
+            builder.RegisterType<TransactionOutputsService>()
+                .As<ITransactionOutputsService>();
 
             builder.RegisterInstance(new FeeSettings
             {

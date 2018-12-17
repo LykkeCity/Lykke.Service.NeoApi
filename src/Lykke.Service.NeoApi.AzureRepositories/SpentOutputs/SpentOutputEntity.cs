@@ -3,7 +3,7 @@ using Lykke.AzureStorage.Tables;
 
 namespace Lykke.Service.NeoApi.AzureRepositories.SpentOutputs
 {
-    public class SpentOutputEntity : AzureTableEntity, IOutput
+    public class SpentOutputEntity : AzureTableEntity
     {
         public Guid OperationId { get; set; }
 

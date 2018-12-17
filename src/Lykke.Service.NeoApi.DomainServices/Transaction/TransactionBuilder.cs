@@ -129,7 +129,7 @@ namespace Lykke.Service.NeoApi.DomainServices.Transaction
         }
 
         //based on https://github.com/neo-project/neo/blob/master/neo/Wallets/Wallet.cs#L71
-        private static Coin[] FindUnspentCoins(IEnumerable<Coin> unspents, UInt256 assetId, Fixed8 amount)
+        private Coin[] FindUnspentCoins(IEnumerable<Coin> unspents, UInt256 assetId, Fixed8 amount)
         {
             var unspentsAsset = unspents.Where(p => p.Output.AssetId == assetId).ToArray();
             var sum = unspentsAsset.Sum(p => p.Output.Value);
