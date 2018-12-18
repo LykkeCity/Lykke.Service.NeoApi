@@ -18,6 +18,7 @@ using System;
 using System.Threading.Tasks;
 using Autofac.Core;
 using Lykke.Job.NeoApi.Modules;
+using Lykke.MonitoringServiceApiCaller;
 using Lykke.Sdk;
 using Lykke.Service.NeoApi.AzureRepositories.Binders;
 using Lykke.Service.NeoApi.Domain.Settings;
