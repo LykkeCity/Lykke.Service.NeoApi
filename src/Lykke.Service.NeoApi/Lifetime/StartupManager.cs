@@ -16,7 +16,7 @@ namespace Lykke.Service.NeoApi.Lifetime
         }
         public async Task StartAsync()
         {
-            _log.Info("Content of protocol.json file", context: File.ReadAllTextAsync("protocol.json"));
+            _log.Info($"Content of protocol.json file \n {await File.ReadAllTextAsync("protocol.json")}");
         }
     }
 }
