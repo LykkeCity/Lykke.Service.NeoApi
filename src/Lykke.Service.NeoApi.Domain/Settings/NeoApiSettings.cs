@@ -16,8 +16,6 @@ namespace Lykke.Service.NeoApi.Domain.Settings
 
         public decimal FixedFee { get; set; }
         
-        public int ConfirmationLevel { get; set; }
-
         public TimeSpan UpdateBalancesTimerPeriod { get; set; }
 
         public TimeSpan DetectTransactionsTimerPeriod { get; set; }

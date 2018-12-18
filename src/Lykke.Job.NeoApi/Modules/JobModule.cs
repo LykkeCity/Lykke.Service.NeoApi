@@ -43,7 +43,6 @@ namespace Lykke.Job.NeoApi.Modules
 
             builder.RegisterType<DetectTransactionsPeriodicalHandler>()
                 .WithParameter(TypedParameter.From(_settings.DetectTransactionsTimerPeriod))
-                .WithParameter(TypedParameter.From(_settings.ConfirmationLevel))
                 .As<IStartable>()
                 .As<IStopable>()
                 .SingleInstance();

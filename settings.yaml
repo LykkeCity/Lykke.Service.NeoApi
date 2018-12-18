@@ -14,8 +14,6 @@ NeoApiService:
         settings-key: NeoApiService-NodeUrl
     FixedFee:
         settings-key: NeoApiService-FixedFee
-    ConfirmationLevel:
-        settings-key: NeoApiService-ConfirmationLevel
     UpdateBalancesTimerPeriod:
         settings-key: NeoApiService-UpdateBalancesTimerPeriod
     DetectTransactionsTimerPeriod:
