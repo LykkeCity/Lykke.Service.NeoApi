@@ -15,7 +15,7 @@ namespace Lykke.Service.NeoApi.Controllers
             new AssetResponse
             {
                 AssetId = Constants.Assets.Neo.AssetId,
-                Accuracy = 0, // The minimum unit of NEO is 1 and tokens cannot be subdivided.
+                Accuracy = Constants.Assets.Neo.Accuracy, 
                 Name = Constants.Assets.Neo.Name,
                 Address = null
             }
