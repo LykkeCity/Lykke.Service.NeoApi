@@ -48,7 +48,7 @@ namespace Lykke.Service.NeoApi.DomainServices.Transaction
                         AssetId = Utils.NeoToken,
                         ScriptHash = to.ToScriptHash(),
                         Value =  BigDecimal.Parse(amount.ToString("F", CultureInfo.InvariantCulture), 
-                            8)
+                            Constants.Assets.Neo.Accuracy)
                     }
                 }.Select(p => p.ToTxOutput()).ToArray(),
                 Witnesses = new Witness[0]
