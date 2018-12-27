@@ -1,11 +1,12 @@
 ﻿using System;
 using Common;
+using Lykke.AzureStorage.Tables;
 using Lykke.Service.NeoApi.Domain.Repositories.Transaction.Dto;
 using Microsoft.WindowsAzure.Storage.Table;
 
 namespace Lykke.Service.NeoApi.AzureRepositories.Transaction
 {
-    internal class ObservableOperationEntity : TableEntity, IObservableOperation
+    internal class ObservableOperationEntity : AzureTableEntity, IObservableOperation
     {
         public BroadcastStatus Status { get; set; }
         public Guid OperationId { get; set; }
