@@ -39,10 +39,18 @@ namespace Lykke.Service.NeoApi.DomainServices.Address
                                  .Balance?
                                  .FirstOrDefault(p => p.Asset == Constants.Assets.Neo.AssetId)?.Amount ?? 0;
 
-                await _walletBalanceRepository.InsertOrReplace(
-                    WalletBalance.Create(address,
-                        balance: (decimal)neoBalance,
-                        updatedAtBlock: (int)lastBlock));
+                if (neoBalance != 0)
+                {
+                    await _walletBalanceRepository.InsertOrReplace(
+                        WalletBalance.Create(address,
+                            balance: (decimal)neoBalance,
+                            updatedAtBlock: (int)lastBlock));
+                }
+                else
+                {
+                    await _walletBalanceRepository.DeleteIfExist(address);
+                }
+
 
                 return (decimal)neoBalance;
             }
