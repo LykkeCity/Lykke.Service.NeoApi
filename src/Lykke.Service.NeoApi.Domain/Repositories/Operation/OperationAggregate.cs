@@ -26,7 +26,7 @@ namespace Lykke.Service.NeoApi.Domain.Repositories.Operation
         public DateTime? DetectedOnBlockchain { get; private set; }
 
         public bool IsBroadcasted => BroadcastedAt != null;
-        public bool IsDatectedOnBlockchain => DetectedOnBlockchain != null;
+        public bool IsDetectedOnBlockchain => DetectedOnBlockchain != null;
 
         public OperationAggregate(string version,
             Guid operationId,
@@ -77,12 +77,18 @@ namespace Lykke.Service.NeoApi.Domain.Repositories.Operation
 
         public void OnBroadcasted(DateTime moment)
         {
-            BroadcastedAt = moment;
+            if (!IsBroadcasted)
+            {
+                BroadcastedAt = moment;
+            }
         }
 
         public void OnDetectedOnBlockcain(DateTime moment)
         {
-            DetectedOnBlockchain = moment;
+            if (!IsDetectedOnBlockchain)
+            {
+                DetectedOnBlockchain = moment;
+            }
         }
 
     }

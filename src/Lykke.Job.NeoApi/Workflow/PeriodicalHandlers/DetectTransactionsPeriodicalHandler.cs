@@ -20,6 +20,7 @@ namespace Lykke.Job.NeoApi.Workflow.PeriodicalHandlers
         private readonly IUnconfirmedTransactionRepository _unconfirmedTransactionRepository;
         private readonly IOperationRepository _operationRepository;
         private readonly IWalletBalanceService _walletBalanceService;
+        private readonly IObservableOperationRepository _observableOperationRepository;
 
         public DetectTransactionsPeriodicalHandler(
             INeoscanService neoscanService,
@@ -27,12 +28,14 @@ namespace Lykke.Job.NeoApi.Workflow.PeriodicalHandlers
             TimeSpan timerPeriod, 
             IUnconfirmedTransactionRepository unconfirmedTransactionRepository, 
             IOperationRepository operationRepository, 
-            IWalletBalanceService walletBalanceService)
+            IWalletBalanceService walletBalanceService,
+            IObservableOperationRepository observableOperationRepository)
         {
             _neoscanService = neoscanService;
             _unconfirmedTransactionRepository = unconfirmedTransactionRepository;
             _operationRepository = operationRepository;
             _walletBalanceService = walletBalanceService;
+            _observableOperationRepository = observableOperationRepository;
 
             _log = logFactory.CreateLog(this);
 
@@ -70,6 +73,16 @@ namespace Lykke.Job.NeoApi.Workflow.PeriodicalHandlers
 
             var isCompleted = blockchainTx?.BlockHash != null; //once a tx included in a block means the tx is confirmed by the 7 consensus nodes and cannt be reversed
 
+            var lastBlockHeight = await _neoscanService.GetHeight();
+
+            var status = isCompleted
+                ? BroadcastStatus.Completed
+                : BroadcastStatus.InProgress;
+
+            await _observableOperationRepository.InsertOrReplace(ObervableOperation.Create(operation, status,
+                unconfirmedTx.TxHash,
+                (int) lastBlockHeight));
+
             if (isCompleted)
             {
                 var fromAddressBalance = await _walletBalanceService.UpdateBalance(operation.FromAddress);
@@ -85,12 +98,13 @@ namespace Lykke.Job.NeoApi.Workflow.PeriodicalHandlers
 
                 _log.Info("Transaction detected on blockchain", context: operationCompletedLoggingContext);
 
+
                 await _unconfirmedTransactionRepository.DeleteIfExist(unconfirmedTx.OperationId);
 
                 operation.OnDetectedOnBlockcain(DateTime.UtcNow);
-
                 await _operationRepository.Save(operation);
             }
+
         }
 
         public void Start()

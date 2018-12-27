@@ -138,6 +138,9 @@ namespace Lykke.Service.NeoApi.Controllers
                 return new StatusCodeResult(409);
             }
 
+            aggregate.OnBroadcasted(DateTime.UtcNow);
+            await _operationRepository.Save(aggregate);
+
             return Ok();
         }
 
