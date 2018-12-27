@@ -15,21 +15,21 @@ namespace Lykke.Service.NeoApi.Controllers
         public IActionResult ObserveTo(
             [FromRoute]string address)
         {
-            return StatusCode(501);
+            return Ok();
         }
 
         [HttpDelete("/api/transactions/history/from/{address}/observation")]
         public IActionResult DeleteObservationFrom(
             [FromRoute]string address)
         {
-            return StatusCode(501);
+            return Ok();
         }
 
         [HttpDelete("/api/transactions/history/to/{address}/observation")]
         public IActionResult DeleteObservationTo(
             [FromRoute]string address)
         {
-            return StatusCode(501);
+            return Ok();
         }
         
         [HttpGet("/api/transactions/history/from/{address}")]
@@ -38,7 +38,7 @@ namespace Lykke.Service.NeoApi.Controllers
             [FromQuery]string afterHash,
             [FromQuery]int take)
         {
-            return StatusCode(501);
+            return Ok();
         }
 
         [HttpGet("/api/transactions/history/to/{address}")]
@@ -47,7 +47,7 @@ namespace Lykke.Service.NeoApi.Controllers
             [FromQuery]string afterHash,
             [FromQuery]int take)
         {
-            return StatusCode(501);
+            return Ok();
         }
     }
 }
