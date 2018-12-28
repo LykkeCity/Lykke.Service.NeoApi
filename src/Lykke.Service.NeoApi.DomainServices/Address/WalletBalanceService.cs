@@ -1,12 +1,13 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using Lykke.Service.NeoApi.Domain;
 using Lykke.Service.NeoApi.Domain.Repositories.Pagination;
 using Lykke.Service.NeoApi.Domain.Repositories.Wallet;
 using Lykke.Service.NeoApi.Domain.Repositories.Wallet.Dto;
 using Lykke.Service.NeoApi.Domain.Services.Address;
 using Lykke.Service.NeoApi.Domain.Services.Address.Exceptions;
+using Lykke.Service.NeoApi.Domain.Services.TransactionOutputs;
 using Microsoft.WindowsAzure.Storage;
+using NeoModules.NEP6.Helpers;
 using NeoModules.Rest.Interfaces;
 
 namespace Lykke.Service.NeoApi.DomainServices.Address
@@ -16,34 +17,39 @@ namespace Lykke.Service.NeoApi.DomainServices.Address
         private readonly IObservableWalletRepository _observableWalletRepository;
         private readonly IWalletBalanceRepository _walletBalanceRepository;
         private readonly INeoscanService _neoscanService;
+        private readonly ITransactionOutputsService _transactionOutputsService;
 
         private const int EntityExistsHttpStatusCode = 409;
         private const int EntityNotExistsHttpStatusCode = 404;
 
         public WalletBalanceService(INeoscanService neoscanService, 
             IObservableWalletRepository observableWalletRepository, 
-            IWalletBalanceRepository walletBalanceRepository)
+            IWalletBalanceRepository walletBalanceRepository, 
+            ITransactionOutputsService transactionOutputsService)
         {
             _neoscanService = neoscanService;
             _observableWalletRepository = observableWalletRepository;
             _walletBalanceRepository = walletBalanceRepository;
+            _transactionOutputsService = transactionOutputsService;
         }
 
-        public async Task<decimal?> UpdateBalance(string address)
+        public async Task<decimal?> UpdateNeoBalance(string address)
         {
             if(await _observableWalletRepository.Get(address) != null)
             {
                 var lastBlock = await _neoscanService.GetHeight();
 
-                var neoBalance = (await _neoscanService.GetBalanceAsync(address))?
-                                 .Balance?
-                                 .FirstOrDefault(p => p.Asset == Constants.Assets.Neo.AssetId)?.Amount ?? 0;
+                var balance = (decimal) (await _transactionOutputsService.GetUnspentOutputsAsync(address))
+                        .Where(p => p.Output.AssetId == Utils.NeoToken)
+                        .ToArray()
+                        .Sum(p => p.Output.Value);
+                
 
-                if (neoBalance != 0)
+                if (balance != 0)
                 {
                     await _walletBalanceRepository.InsertOrReplace(
                         WalletBalance.Create(address,
-                            balance: (decimal)neoBalance,
+                            balance: balance,
                             updatedAtBlock: (int)lastBlock));
                 }
                 else
@@ -52,7 +58,7 @@ namespace Lykke.Service.NeoApi.DomainServices.Address
                 }
 
 
-                return (decimal)neoBalance;
+                return balance;
             }
 
             return null;

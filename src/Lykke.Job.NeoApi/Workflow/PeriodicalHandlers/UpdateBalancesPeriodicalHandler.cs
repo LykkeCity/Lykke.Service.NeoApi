@@ -37,7 +37,7 @@ namespace Lykke.Job.NeoApi.Workflow.PeriodicalHandlers
             {
                 try
                 {
-                    await _walletBalanceService.UpdateBalance(wallet.Address);
+                    await _walletBalanceService.UpdateNeoBalance(wallet.Address);
                 }
                 catch (Exception e)
                 {

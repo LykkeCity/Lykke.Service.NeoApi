@@ -85,8 +85,8 @@ namespace Lykke.Job.NeoApi.Workflow.PeriodicalHandlers
 
             if (isCompleted)
             {
-                var fromAddressBalance = await _walletBalanceService.UpdateBalance(operation.FromAddress);
-                var toAddressBalance = await _walletBalanceService.UpdateBalance(operation.ToAddress);
+                var fromAddressBalance = await _walletBalanceService.UpdateNeoBalance(operation.FromAddress);
+                var toAddressBalance = await _walletBalanceService.UpdateNeoBalance(operation.ToAddress);
 
                 var operationCompletedLoggingContext = new
                 {

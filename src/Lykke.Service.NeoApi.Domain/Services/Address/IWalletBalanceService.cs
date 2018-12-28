@@ -6,7 +6,7 @@ namespace Lykke.Service.NeoApi.Domain.Services.Address
 {
     public interface IWalletBalanceService
     {
-        Task<decimal?> UpdateBalance(string address);
+        Task<decimal?> UpdateNeoBalance(string address);
         Task Subscribe(string address);
         Task Unsubscribe(string address);
         Task<IPaginationResult<IWalletBalance>> GetBalances(int take, string continuation);
