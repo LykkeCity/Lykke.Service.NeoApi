@@ -67,13 +67,13 @@ namespace Lykke.Service.NeoApi.Controllers
             if (request.AssetId != Constants.Assets.Neo.AssetId)
             {
 
-                return BadRequest(ErrorResponse.Create(ErrorResponse.Create("Invalid assetId"));
+                return BadRequest(ErrorResponse.Create("Invalid assetId"));
             }
 
             var toAddressValid = _addressValidator.IsAddressValid(request.ToAddress);
             if (!toAddressValid)
             {
-                return BadRequest(ErrorResponse.Create(ErrorResponse.Create("Invalid toAddress"));
+                return BadRequest(ErrorResponse.Create("Invalid toAddress"));
             }
 
             var fromAddressValid = _addressValidator.IsAddressValid(request.FromAddress);
@@ -84,7 +84,7 @@ namespace Lykke.Service.NeoApi.Controllers
 
             if (request.OperationId == Guid.Empty)
             {
-                return BadRequest("Invalid operation id (GUID)");
+                return BadRequest(ErrorResponse.Create("Invalid operation id (GUID)"));
             }
 
             var aggregate = await _operationRepository.GetOrInsert(request.OperationId,
