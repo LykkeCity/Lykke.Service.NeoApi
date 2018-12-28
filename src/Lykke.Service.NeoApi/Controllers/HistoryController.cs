@@ -1,4 +1,6 @@
-﻿using Lykke.Common.Api.Contract.Responses;
+﻿using System.Linq;
+using Lykke.Common.Api.Contract.Responses;
+using Lykke.Service.BlockchainApi.Contract.Transactions;
 using Lykke.Service.NeoApi.Domain.Services.Address;
 using Microsoft.AspNetCore.Mvc;
 
@@ -72,7 +74,7 @@ namespace Lykke.Service.NeoApi.Controllers
                 return BadRequest("Address is invalid");
             }
 
-            return Ok();
+            return Ok(Enumerable.Empty<HistoricalTransactionContract>());
         }
 
         [HttpGet("/api/transactions/history/to/{address}")]
@@ -91,7 +93,7 @@ namespace Lykke.Service.NeoApi.Controllers
                 return BadRequest("Address is invalid");
             }
 
-            return Ok();
+            return Ok(Enumerable.Empty<HistoricalTransactionContract>());
         }
     }
 }
