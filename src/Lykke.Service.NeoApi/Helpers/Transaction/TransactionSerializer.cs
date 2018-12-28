@@ -1,4 +1,7 @@
-﻿using Common;
+﻿using System;
+using Common;
+using Lykke.Service.NeoApi.Helpers.Transaction.Exceptions;
+using Newtonsoft.Json;
 
 namespace Lykke.Service.NeoApi.Helpers.Transaction
 {
@@ -11,7 +14,14 @@ namespace Lykke.Service.NeoApi.Helpers.Transaction
 
         public static NeoModules.NEP6.Transactions.Transaction Deserialize(string source)
         {
-            return source.DeserializeJson<TransactionContract>().ToDomain();
+            try
+            {
+                return source.DeserializeJson<TransactionContract>().ToDomain();
+            }
+            catch (JsonReaderException e)
+            {
+                throw new InvalidTransactionException();
+            }
         }
     }
 }

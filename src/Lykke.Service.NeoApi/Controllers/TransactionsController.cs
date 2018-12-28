@@ -12,7 +12,9 @@ using Lykke.Service.NeoApi.Domain.Services.Transaction.Exceptions;
 using Lykke.Service.NeoApi.DomainServices.Transaction;
 using Lykke.Service.NeoApi.Helpers;
 using Lykke.Service.NeoApi.Helpers.Transaction;
+using Lykke.Service.NeoApi.Helpers.Transaction.Exceptions;
 using Microsoft.AspNetCore.Mvc;
+using NeoModules.NEP6.Transactions;
 
 namespace Lykke.Service.NeoApi.Controllers
 {
@@ -126,8 +128,20 @@ namespace Lykke.Service.NeoApi.Controllers
                 return BadRequest($"Operation {request.OperationId} not found");
             }
 
-            //todo handle invalid format string
-            var tx = TransactionSerializer.Deserialize(request.SignedTransaction);
+            if (aggregate.IsBroadcasted)
+            {
+                return Conflict();
+            }
+
+            Transaction tx;
+            try
+            {
+                tx = TransactionSerializer.Deserialize(request.SignedTransaction);
+            }
+            catch (InvalidTransactionException)
+            {
+                return BadRequest($"{nameof(request.SignedTransaction)} is invalid");
+            }
 
             try
             {
