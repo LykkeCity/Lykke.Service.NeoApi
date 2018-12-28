@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Threading.Tasks;
+using Lykke.Common.Api.Contract.Responses;
 using Lykke.Service.BlockchainApi.Contract.Transactions;
 using Lykke.Service.NeoApi.Domain;
 using Lykke.Service.NeoApi.Domain.Repositories.Operation;
@@ -47,14 +48,14 @@ namespace Lykke.Service.NeoApi.Controllers
         {
             if (request == null)
             {
-                return BadRequest("Unable to deserialize request");
+                return BadRequest(ErrorResponse.Create("Unable to deserialize request"));
             }
 
             var amount = MoneyConversionHelper.FromContract(request.Amount);
 
             if (amount <= 0)
             {
-                return BadRequest($"Amount can't be less or equal to zero: {amount}");
+                return BadRequest(ErrorResponse.Create($"Amount can't be less or equal to zero: {amount}"));
             }
 
             if (amount % 1 != 0)
@@ -66,19 +67,19 @@ namespace Lykke.Service.NeoApi.Controllers
             if (request.AssetId != Constants.Assets.Neo.AssetId)
             {
 
-                return BadRequest("Invalid assetId");
+                return BadRequest(ErrorResponse.Create(ErrorResponse.Create("Invalid assetId"));
             }
 
             var toAddressValid = _addressValidator.IsAddressValid(request.ToAddress);
             if (!toAddressValid)
             {
-                return BadRequest("Invalid toAddress");
+                return BadRequest(ErrorResponse.Create(ErrorResponse.Create("Invalid toAddress"));
             }
 
             var fromAddressValid = _addressValidator.IsAddressValid(request.FromAddress);
             if (!fromAddressValid)
             {
-                return BadRequest("Invalid fromAddress");
+                return BadRequest(ErrorResponse.Create("Invalid fromAddress"));
             }
 
             if (request.OperationId == Guid.Empty)
@@ -118,14 +119,14 @@ namespace Lykke.Service.NeoApi.Controllers
         {
             if (request == null)
             {
-                return BadRequest("Unable to deserialize request");
+                return BadRequest(ErrorResponse.Create("Unable to deserialize request"));
             }
 
             var aggregate = await _operationRepository.GetOrDefault(request.OperationId);
 
             if (aggregate == null)
             {
-                return BadRequest($"Operation {request.OperationId} not found");
+                return BadRequest(ErrorResponse.Create($"Operation {request.OperationId} not found"));
             }
             
             Transaction tx;
@@ -135,7 +136,7 @@ namespace Lykke.Service.NeoApi.Controllers
             }
             catch (InvalidTransactionException)
             {
-                return BadRequest($"{nameof(request.SignedTransaction)} is invalid");
+                return BadRequest(ErrorResponse.Create($"{nameof(request.SignedTransaction)} is invalid"));
             }
 
             if (aggregate.IsBroadcasted)

@@ -28,7 +28,7 @@ namespace Lykke.Service.NeoApi.Controllers
         {
             if (!_addressValidator.IsAddressValid(address))
             {
-                return BadRequest("Address is invalid");
+                return BadRequest(ErrorResponse.Create("Address is invalid");
             }
 
             return Ok();
@@ -40,7 +40,7 @@ namespace Lykke.Service.NeoApi.Controllers
         {
             if (!_addressValidator.IsAddressValid(address))
             {
-                return BadRequest("Address is invalid");
+                return BadRequest(ErrorResponse.Create("Address is invalid");
             }
 
             return Ok();
@@ -52,7 +52,7 @@ namespace Lykke.Service.NeoApi.Controllers
         {
             if (!_addressValidator.IsAddressValid(address))
             {
-                return BadRequest("Address is invalid");
+                return BadRequest(ErrorResponse.Create("Address is invalid");
             }
 
             return Ok();
