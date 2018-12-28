@@ -127,12 +127,7 @@ namespace Lykke.Service.NeoApi.Controllers
             {
                 return BadRequest($"Operation {request.OperationId} not found");
             }
-
-            if (aggregate.IsBroadcasted)
-            {
-                return Conflict();
-            }
-
+            
             Transaction tx;
             try
             {
@@ -141,6 +136,11 @@ namespace Lykke.Service.NeoApi.Controllers
             catch (InvalidTransactionException)
             {
                 return BadRequest($"{nameof(request.SignedTransaction)} is invalid");
+            }
+
+            if (aggregate.IsBroadcasted)
+            {
+                return Conflict();
             }
 
             try
