@@ -101,11 +101,12 @@ namespace Lykke.Service.NeoApi.Controllers
                 return StatusCode(409);
             }
 
+            var fee = aggregate.IsCashout ? _feeSettings.FixedFee : 0;
             var tx = await _transactionBuilder.BuildNeoContractTransactionAsync(request.FromAddress,
                 request.ToAddress,
                 amount,
                 request.IncludeFee,
-                _feeSettings.FixedFee);
+                fee);
 
 
             return Ok(new BuildTransactionResponse

@@ -20,6 +20,8 @@ namespace Lykke.Service.NeoApi.Domain.Repositories.Operation
 
         public bool IncludeFee { get; }
 
+        public bool IsCashout => IncludeFee == false;
+
         public DateTime InsertedAt { get; }
 
         public DateTime? BroadcastedAt { get; private set; }
