@@ -7,8 +7,8 @@
             public static class Neo
             {
 
-                public const string AssetId = "NEO";
-                public const string Name = "NEO";
+                public const string AssetId = "Neo";
+                public const string Name = "Neo";
                 public const int Accuracy = 0; // The minimum unit of NEO is 1 and tokens cannot be subdivided.
             }
         }
