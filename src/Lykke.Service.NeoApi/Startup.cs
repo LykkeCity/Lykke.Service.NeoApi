@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using AsyncFriendlyStackTrace;
 using Lykke.Common.Api.Contract.Responses;
+using Lykke.Logs.Loggers.LykkeSlack;
 using Lykke.Service.NeoApi.AzureRepositories.Binders;
 using Lykke.Service.NeoApi.Domain.Settings;
 using Lykke.Service.NeoApi.DomainServices.Binders;
@@ -31,6 +32,19 @@ namespace Lykke.Service.NeoApi
                 {
                     logs.AzureTableName = "NeoApiLog";
                     logs.AzureTableConnectionStringResolver = settings => settings.NeoApiService.Db.LogsConnString;
+
+                    logs.Extended = logBuilder =>
+                    {
+                        logBuilder.AddAdditionalSlackChannel("BlockChainIntegration", opt =>
+                        {
+                            opt.MinLogLevel = Microsoft.Extensions.Logging.LogLevel.Information; // Let it be explicit
+                        });
+
+                        logBuilder.AddAdditionalSlackChannel("BlockChainIntegrationImportantMessages", opt =>
+                        {
+                            opt.MinLogLevel = Microsoft.Extensions.Logging.LogLevel.Warning;
+                        });
+                    };
                 };
 
                 options.RegisterAdditionalModules = moduleRegistration =>

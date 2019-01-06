@@ -18,6 +18,7 @@ using System;
 using System.Threading.Tasks;
 using Autofac.Core;
 using Lykke.Job.NeoApi.Modules;
+using Lykke.Logs.Loggers.LykkeSlack;
 using Lykke.MonitoringServiceApiCaller;
 using Lykke.Sdk;
 using Lykke.Service.NeoApi.AzureRepositories.Binders;
@@ -82,7 +83,19 @@ namespace Lykke.Job.NeoApi
                     settingsManager.ConnectionString(s => s.NeoApiService.Db.LogsConnString),
                     "NeoApiJobLog",
                     appSettings.SlackNotifications.AzureQueue.ConnectionString,
-                    appSettings.SlackNotifications.AzureQueue.QueueName);
+                    appSettings.SlackNotifications.AzureQueue.QueueName,
+                    logBuilder =>
+                    {
+                        logBuilder.AddAdditionalSlackChannel("BlockChainIntegration", options =>
+                        {
+                            options.MinLogLevel = Microsoft.Extensions.Logging.LogLevel.Information; // Let it be explicit
+                        });
+
+                        logBuilder.AddAdditionalSlackChannel("BlockChainIntegrationImportantMessages", options =>
+                        {
+                            options.MinLogLevel = Microsoft.Extensions.Logging.LogLevel.Warning;
+                        });
+                    });
 
                 var builder = new ContainerBuilder();
                 builder.Populate(services);
