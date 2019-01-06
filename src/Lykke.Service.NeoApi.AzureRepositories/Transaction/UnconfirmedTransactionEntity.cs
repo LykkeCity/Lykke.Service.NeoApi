@@ -1,5 +1,4 @@
 ﻿using System;
-using Common;
 using Lykke.Service.NeoApi.Domain.Repositories.Transaction.Dto;
 using Microsoft.WindowsAzure.Storage.Table;
 
@@ -10,9 +9,9 @@ namespace Lykke.Service.NeoApi.AzureRepositories.Transaction
         public string TxHash { get; set; }
         public Guid OperationId { get; set; }
 
-        public static string GeneratePartitionKey(Guid operationId)
+        public static string GeneratePartitionKey()
         {
-            return operationId.ToString().CalculateHexHash32(3);
+            return "_";
         }
 
         public static string GenerateRowKey(Guid operationId)
@@ -24,7 +23,7 @@ namespace Lykke.Service.NeoApi.AzureRepositories.Transaction
         {
             return new UnconfirmedTransactionEntity
             {
-                PartitionKey = GeneratePartitionKey(source.OperationId),
+                PartitionKey = GeneratePartitionKey(),
                 RowKey = GenerateRowKey(source.OperationId),
                 OperationId = source.OperationId,
                 TxHash = source.TxHash

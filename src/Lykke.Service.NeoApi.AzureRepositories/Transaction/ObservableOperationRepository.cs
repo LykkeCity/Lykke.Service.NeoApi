@@ -25,14 +25,14 @@ namespace Lykke.Service.NeoApi.AzureRepositories.Transaction
         {
             foreach (var operationId in operationIds)
             {
-                await _storage.DeleteIfExistAsync(ObservableOperationEntity.ByOperationId.GeneratePartitionKey(operationId),
+                await _storage.DeleteIfExistAsync(ObservableOperationEntity.ByOperationId.GeneratePartitionKey(),
                     ObservableOperationEntity.ByOperationId.GenerateRowKey(operationId));
             }
         }
 
         public async Task<IObservableOperation> GetById(Guid opId)
         {
-            return await _storage.GetDataAsync(ObservableOperationEntity.ByOperationId.GeneratePartitionKey(opId),
+            return await _storage.GetDataAsync(ObservableOperationEntity.ByOperationId.GeneratePartitionKey(),
                 UnconfirmedTransactionEntity.GenerateRowKey(opId));
         }
     }

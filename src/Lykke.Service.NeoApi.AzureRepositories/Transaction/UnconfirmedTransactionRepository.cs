@@ -30,7 +30,7 @@ namespace Lykke.Service.NeoApi.AzureRepositories.Transaction
         {
             foreach (var operationId in operationIds)
             {
-                await _storage.DeleteIfExistAsync(UnconfirmedTransactionEntity.GeneratePartitionKey(operationId),
+                await _storage.DeleteIfExistAsync(UnconfirmedTransactionEntity.GeneratePartitionKey(),
                     UnconfirmedTransactionEntity.GenerateRowKey(operationId));
             }
         }

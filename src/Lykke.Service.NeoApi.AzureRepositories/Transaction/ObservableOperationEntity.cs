@@ -1,8 +1,6 @@
 ﻿using System;
-using Common;
 using Lykke.AzureStorage.Tables;
 using Lykke.Service.NeoApi.Domain.Repositories.Transaction.Dto;
-using Microsoft.WindowsAzure.Storage.Table;
 
 namespace Lykke.Service.NeoApi.AzureRepositories.Transaction
 {
@@ -41,9 +39,9 @@ namespace Lykke.Service.NeoApi.AzureRepositories.Transaction
 
         public static class ByOperationId 
         {
-            public static string GeneratePartitionKey(Guid operationId)
+            public static string GeneratePartitionKey()
             {
-                return operationId.ToString().CalculateHexHash32(3);
+                return "_";
             }
 
             public static string GenerateRowKey(Guid operationId)
@@ -53,7 +51,7 @@ namespace Lykke.Service.NeoApi.AzureRepositories.Transaction
 
             public static ObservableOperationEntity Create(IObservableOperation source)
             {
-                return Map(GeneratePartitionKey(source.OperationId), GenerateRowKey(source.OperationId), source);
+                return Map(GeneratePartitionKey(), GenerateRowKey(source.OperationId), source);
             }
         }
     }

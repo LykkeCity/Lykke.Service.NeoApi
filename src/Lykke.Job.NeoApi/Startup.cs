@@ -16,6 +16,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Converters;
 using System;
 using System.Threading.Tasks;
+using AsyncFriendlyStackTrace;
 using Autofac.Core;
 using Lykke.Job.NeoApi.Modules;
 using Lykke.Logs.Loggers.LykkeSlack;
