@@ -138,7 +138,7 @@ namespace Lykke.Job.NeoApi
                     app.UseDeveloperExceptionPage();
 
                 app.UseLykkeForwardedHeaders();
-                app.UseLykkeMiddleware(ex => new ErrorResponse {ErrorMessage = "Technical problem"});
+                app.UseLykkeMiddleware(ex => new ErrorResponse {ErrorMessage = ex.ToAsyncString()});
 
                 app.UseMvc();
                 app.UseSwagger(c =>
@@ -170,7 +170,7 @@ namespace Lykke.Job.NeoApi
                 // NOTE: Job not yet recieve and process IsAlive requests here
 
                 await ApplicationContainer.Resolve<IStartupManager>().StartAsync();
-                _healthNotifier.Notify("Started", Program.EnvInfo);
+                _healthNotifier.Notify("Started");
 
 #if !DEBUG
                 await Configuration.RegisterInMonitoringServiceAsync(_monitoringServiceUrl, _healthNotifier);
@@ -203,7 +203,7 @@ namespace Lykke.Job.NeoApi
             try
             {
                 // NOTE: Job can't recieve and process IsAlive requests here, so you can destroy all resources
-                _healthNotifier?.Notify("Terminating", Program.EnvInfo);
+                _healthNotifier?.Notify("Terminating");
 
                 ApplicationContainer.Dispose();
             }

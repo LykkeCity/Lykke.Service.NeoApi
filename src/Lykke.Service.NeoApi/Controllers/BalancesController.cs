@@ -39,7 +39,7 @@ namespace Lykke.Service.NeoApi.Controllers
             catch (WalletAlreadyExistException)
             {
 
-                return StatusCode(409);
+                return Conflict();
             }
 
             return Ok();
