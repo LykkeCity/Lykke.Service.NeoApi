@@ -151,7 +151,7 @@ namespace Lykke.Service.NeoApi.Controllers
             }
             catch (TransactionAlreadyBroadcastedException)
             {
-                return new StatusCodeResult(409);
+                return Conflict();
             }
 
             aggregate.OnBroadcasted(DateTime.UtcNow);
