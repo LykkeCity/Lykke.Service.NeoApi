@@ -2,6 +2,7 @@
 using System.Net;
 using System.Threading.Tasks;
 using Lykke.Common.Api.Contract.Responses;
+using Lykke.Common.ApiLibrary.Contract;
 using Lykke.Service.BlockchainApi.Contract.Transactions;
 using Lykke.Service.NeoApi.Domain;
 using Lykke.Service.NeoApi.Domain.Repositories.Operation;
@@ -82,11 +83,11 @@ namespace Lykke.Service.NeoApi.Controllers
                 return BadRequest(ErrorResponse.Create("Invalid fromAddress"));
             }
 
-            if (request.OperationId == Guid.Empty)
+            if (!ModelState.IsValidOperationId(request.OperationId))
             {
-                return BadRequest(ErrorResponse.Create("Invalid operation id (GUID)"));
+                return BadRequest(ErrorResponseFactory.Create(ModelState));
             }
-
+            
             var aggregate = await _operationRepository.GetOrInsert(request.OperationId,
                 () => OperationAggregate.StartNew(request.OperationId,
                     fromAddress: request.FromAddress,
@@ -166,7 +167,7 @@ namespace Lykke.Service.NeoApi.Controllers
             if (!ModelState.IsValid ||
                 !ModelState.IsValidOperationId(operationId))
             {
-                return BadRequest(ModelState.ToErrorResponce());
+                return BadRequest(ErrorResponseFactory.Create(ModelState));
             }
 
             var result = await _observableOperationRepository.GetById(operationId);
@@ -209,7 +210,7 @@ namespace Lykke.Service.NeoApi.Controllers
             if (!ModelState.IsValid ||
                 !ModelState.IsValidOperationId(operationId))
             {
-                return BadRequest(ModelState.ToErrorResponce());
+                return BadRequest(ErrorResponseFactory.Create(ModelState));
             }
 
             await _observableOperationRepository.DeleteIfExist(operationId);

@@ -41,7 +41,6 @@ namespace Lykke.Service.NeoApi.DomainServices.Address
 
                 var balance = (decimal) (await _transactionOutputsService.GetUnspentOutputsAsync(address))
                         .Where(p => p.Output.AssetId == Utils.NeoToken)
-                        .ToArray()
                         .Sum(p => p.Output.Value);
                 
 

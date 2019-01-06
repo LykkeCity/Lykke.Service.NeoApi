@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Lykke.Common.ApiLibrary.Contract;
 using Lykke.Service.BlockchainApi.Contract;
 using Lykke.Service.BlockchainApi.Contract.Assets;
 using Lykke.Service.NeoApi.Domain;
@@ -28,7 +29,7 @@ namespace Lykke.Service.NeoApi.Controllers
                 !ModelState.IsValidContinuationToken(continuation) || 
                 !ModelState.IsValidTakeParameter(take))
             {
-                return BadRequest(ModelState.ToErrorResponce());
+                return BadRequest(ErrorResponseFactory.Create(ModelState));
             }
 
             return Ok(PaginationResponse.From(null, Storage.Take(take).ToList()));

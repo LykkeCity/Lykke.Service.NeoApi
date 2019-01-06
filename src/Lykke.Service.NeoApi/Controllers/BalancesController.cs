@@ -2,6 +2,7 @@
 using System.Net;
 using System.Threading.Tasks;
 using Lykke.Common.Api.Contract.Responses;
+using Lykke.Common.ApiLibrary.Contract;
 using Lykke.Service.BlockchainApi.Contract;
 using Lykke.Service.BlockchainApi.Contract.Balances;
 using Lykke.Service.NeoApi.Domain;
@@ -86,7 +87,7 @@ namespace Lykke.Service.NeoApi.Controllers
 
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState.ToErrorResponce());
+                return BadRequest(ErrorResponseFactory.Create(ModelState));
             }
 
             var padedResult = await _balanceService.GetBalances(take, continuation);

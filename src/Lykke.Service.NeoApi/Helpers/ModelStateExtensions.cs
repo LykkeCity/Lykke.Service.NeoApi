@@ -10,26 +10,6 @@ namespace Lykke.Service.NeoApi.Helpers
 {
     public static class ModelStateExtensions
     {
-        public static ErrorResponse ToErrorResponce(this ModelStateDictionary modelState)
-        {
-            var response = new ErrorResponse() {ModelErrors = new Dictionary<string, List<string>>()};
-
-            foreach (var state in modelState)
-            {
-                var messages = state.Value.Errors
-                    .Where(e => !string.IsNullOrWhiteSpace(e.ErrorMessage))
-                    .Select(e => e.ErrorMessage)
-                    .Concat(state.Value.Errors
-                        .Where(e => string.IsNullOrWhiteSpace(e.ErrorMessage))
-                        .Select(e => e.Exception.Message))
-                    .ToList();
-
-                response.ModelErrors.Add(state.Key, messages);
-            }
-
-            return response;
-        }
-
         public static bool IsValidOperationId(this ModelStateDictionary self, Guid operationId)
         {
             if (operationId == Guid.Empty)
