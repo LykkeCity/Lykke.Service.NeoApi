@@ -157,7 +157,7 @@ namespace Lykke.Job.NeoApi
                 // NOTE: Job not yet recieve and process IsAlive requests here
 
                 await ApplicationContainer.Resolve<IStartupManager>().StartAsync();
-                _healthNotifier.Notify("Started", Program.EnvInfo);
+                _healthNotifier.Notify("Started");
 
 #if !DEBUG
                 await Configuration.RegisterInMonitoringServiceAsync(_monitoringServiceUrl, _healthNotifier);
