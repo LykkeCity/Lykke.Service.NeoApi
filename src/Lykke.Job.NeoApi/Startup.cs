@@ -190,7 +190,7 @@ namespace Lykke.Job.NeoApi
             try
             {
                 // NOTE: Job can't recieve and process IsAlive requests here, so you can destroy all resources
-                _healthNotifier?.Notify("Terminating", Program.EnvInfo);
+                _healthNotifier?.Notify("Terminating");
 
                 ApplicationContainer.Dispose();
             }
