@@ -125,7 +125,7 @@ namespace Lykke.Job.NeoApi
                     app.UseDeveloperExceptionPage();
 
                 app.UseLykkeForwardedHeaders();
-                app.UseLykkeMiddleware(ex => new ErrorResponse {ErrorMessage = "Technical problem"});
+                app.UseLykkeMiddleware(ex => new ErrorResponse {ErrorMessage = ex.ToAsyncString()});
 
                 app.UseMvc();
                 app.UseSwagger(c =>
