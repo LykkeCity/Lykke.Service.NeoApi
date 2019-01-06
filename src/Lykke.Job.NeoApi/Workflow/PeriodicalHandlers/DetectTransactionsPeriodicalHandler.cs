@@ -109,7 +109,7 @@ namespace Lykke.Job.NeoApi.Workflow.PeriodicalHandlers
 
         public void Start()
         {
-            _log.Info($"Starting {nameof(DetectTransactionsPeriodicalHandler)}");
+            _log.Info("Starting");
 
             _timerTrigger.Start();
         }

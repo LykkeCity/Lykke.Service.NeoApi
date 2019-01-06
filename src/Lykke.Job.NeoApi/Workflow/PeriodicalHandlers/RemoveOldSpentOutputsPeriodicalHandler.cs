@@ -37,7 +37,7 @@ namespace Lykke.Job.NeoApi.Workflow.PeriodicalHandlers
         
         public void Start()
         {
-            _log.Info($"Starting {nameof(RemoveOldSpentOutputsPeriodicalHandler)}");
+            _log.Info("Starting");
 
             _timerTrigger.Start();
         }
