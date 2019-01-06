@@ -98,7 +98,7 @@ namespace Lykke.Service.NeoApi.Controllers
 
             if (aggregate.IsBroadcasted)
             {
-                return StatusCode(409);
+                return Conflict();
             }
 
             var fee = aggregate.IsCashout ? _feeSettings.FixedFee : 0;
