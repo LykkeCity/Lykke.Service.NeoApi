@@ -9,22 +9,22 @@ namespace Lykke.Service.NeoApi.AzureRepositories.Transaction
         public string TxHash { get; set; }
         public Guid OperationId { get; set; }
 
-        public static string GeneratePartitionKey()
-        {
-            return "_";
-        }
-
-        public static string GenerateRowKey(Guid operationId)
+        public static string GeneratePartitionKey(Guid operationId)
         {
             return operationId.ToString();
+        }
+
+        public static string GenerateRowKey()
+        {
+            return "_";
         }
 
         public static UnconfirmedTransactionEntity Create(IUnconfirmedTransaction source)
         {
             return new UnconfirmedTransactionEntity
             {
-                PartitionKey = GeneratePartitionKey(),
-                RowKey = GenerateRowKey(source.OperationId),
+                PartitionKey = GeneratePartitionKey(source.OperationId),
+                RowKey = GenerateRowKey(),
                 OperationId = source.OperationId,
                 TxHash = source.TxHash
             };

@@ -39,19 +39,19 @@ namespace Lykke.Service.NeoApi.AzureRepositories.Transaction
 
         public static class ByOperationId 
         {
-            public static string GeneratePartitionKey()
-            {
-                return "_";
-            }
-
-            public static string GenerateRowKey(Guid operationId)
+            public static string GeneratePartitionKey(Guid operationId)
             {
                 return operationId.ToString();
             }
 
+            public static string GenerateRowKey()
+            {
+                return "_";
+            }
+
             public static ObservableOperationEntity Create(IObservableOperation source)
             {
-                return Map(GeneratePartitionKey(), GenerateRowKey(source.OperationId), source);
+                return Map(GeneratePartitionKey(source.OperationId), GenerateRowKey(), source);
             }
         }
     }

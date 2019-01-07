@@ -138,7 +138,7 @@ namespace Lykke.Service.NeoApi.DomainServices.Transaction
                 throw new NotEnoughFundsException($"Not enough funds for assetId {assetId}. Requested: {amount}, Available: {sum}.");
             }
             if (sum == amount) return unspentsAsset;
-            var unspentsOrdered = unspentsAsset.OrderBy(p => p.Output.Value).ToArray();
+            var unspentsOrdered = unspentsAsset.OrderByDescending(p => p.Output.Value).ToArray();
             var i = 0;
             while (unspentsOrdered[i].Output.Value <= amount)
                 amount -= unspentsOrdered[i++].Output.Value;

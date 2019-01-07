@@ -37,12 +37,14 @@ namespace Lykke.Service.NeoApi
                     {
                         logBuilder.AddAdditionalSlackChannel("BlockChainIntegration", opt =>
                         {
-                            opt.MinLogLevel = Microsoft.Extensions.Logging.LogLevel.Information; // Let it be explicit
+                            opt.MinLogLevel = Microsoft.Extensions.Logging.LogLevel.Information;
+                            opt.IncludeHealthNotifications();
                         });
 
                         logBuilder.AddAdditionalSlackChannel("BlockChainIntegrationImportantMessages", opt =>
                         {
                             opt.MinLogLevel = Microsoft.Extensions.Logging.LogLevel.Warning;
+                            opt.IncludeHealthNotifications();
                         });
                     };
                 };

@@ -1,5 +1,7 @@
-﻿using System.Linq;
+﻿using System.Collections.Concurrent;
+using System.Linq;
 using System.Threading.Tasks;
+using Lykke.Service.NeoApi.Domain.Helpers;
 using Lykke.Service.NeoApi.Domain.Repositories.Pagination;
 using Lykke.Service.NeoApi.Domain.Repositories.Wallet;
 using Lykke.Service.NeoApi.Domain.Repositories.Wallet.Dto;
@@ -7,8 +9,10 @@ using Lykke.Service.NeoApi.Domain.Services.Address;
 using Lykke.Service.NeoApi.Domain.Services.Address.Exceptions;
 using Lykke.Service.NeoApi.Domain.Services.TransactionOutputs;
 using Microsoft.WindowsAzure.Storage;
+using NeoModules.Core;
 using NeoModules.NEP6.Helpers;
 using NeoModules.Rest.Interfaces;
+using NeoModules.Rest.DTOs.NeoScan;
 
 namespace Lykke.Service.NeoApi.DomainServices.Address
 {
@@ -39,10 +43,35 @@ namespace Lykke.Service.NeoApi.DomainServices.Address
             {
                 var lastBlock = await _neoscanService.GetHeight();
 
-                var balance = (decimal) (await _transactionOutputsService.GetUnspentOutputsAsync(address))
-                        .Where(p => p.Output.AssetId == Utils.NeoToken)
+                var unspentOutputs = (await _transactionOutputsService.GetUnspentOutputsAsync(address))
+                    .Where(p => p.Output.AssetId == Utils.NeoToken)
+                    .ToList();
+
+                var blockHeightFromTxHash = new ConcurrentDictionary<UInt256, 
+                    NeoModules.Rest.DTOs.NeoScan.Transaction>();
+
+                await unspentOutputs.Select(p => p.Reference.PrevHash).Distinct()
+                    .ForEachAsyncSemaphore(8, async txHash =>
+                    {
+                        blockHeightFromTxHash.TryAdd(txHash, 
+                            await _neoscanService.GetTransactionAsync(txHash.ToString().Substring(2)));
+                    });
+
+                var validatedUnspentOutputs = unspentOutputs
+                    .Where(p =>
+                    {
+                        var tx = blockHeightFromTxHash[p.Reference.PrevHash];
+
+                        if (tx.BlockHash == null) // unconfirmed tx
+                        {
+                            return false;
+                        }
+
+                        return tx.BlockHeight <= lastBlock;
+                    });
+
+                var balance = (decimal) validatedUnspentOutputs
                         .Sum(p => p.Output.Value);
-                
 
                 if (balance != 0)
                 {
@@ -85,8 +114,10 @@ namespace Lykke.Service.NeoApi.DomainServices.Address
             {
                 throw new WalletNotExistException();
             }
-
-            await _walletBalanceRepository.DeleteIfExist(address);
+            finally
+            {
+                await _walletBalanceRepository.DeleteIfExist(address);
+            }
         }
 
         public async Task<IPaginationResult<IWalletBalance>> GetBalances(int take, string continuation)

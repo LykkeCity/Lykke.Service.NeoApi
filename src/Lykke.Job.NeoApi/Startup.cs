@@ -87,14 +87,16 @@ namespace Lykke.Job.NeoApi
                     appSettings.SlackNotifications.AzureQueue.QueueName,
                     logBuilder =>
                     {
-                        logBuilder.AddAdditionalSlackChannel("BlockChainIntegration", options =>
+                        logBuilder.AddAdditionalSlackChannel("BlockChainIntegration", opt =>
                         {
-                            options.MinLogLevel = Microsoft.Extensions.Logging.LogLevel.Information; // Let it be explicit
+                            opt.MinLogLevel = Microsoft.Extensions.Logging.LogLevel.Information;
+                            opt.IncludeHealthNotifications();
                         });
 
-                        logBuilder.AddAdditionalSlackChannel("BlockChainIntegrationImportantMessages", options =>
+                        logBuilder.AddAdditionalSlackChannel("BlockChainIntegrationImportantMessages", opt =>
                         {
-                            options.MinLogLevel = Microsoft.Extensions.Logging.LogLevel.Warning;
+                            opt.MinLogLevel = Microsoft.Extensions.Logging.LogLevel.Warning;
+                            opt.IncludeHealthNotifications();
                         });
                     });
 
