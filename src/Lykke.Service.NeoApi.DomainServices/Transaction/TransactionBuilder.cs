@@ -26,12 +26,6 @@ namespace Lykke.Service.NeoApi.DomainServices.Transaction
 
         public async Task<NeoModules.NEP6.Transactions.Transaction> BuildNeoContractTransactionAsync(string from, string to, decimal amount, bool includeFee, decimal fixedFee)
         {
-            if (amount <= fixedFee)
-            {
-                throw new ArgumentException(
-                    $"Passed transaction amount  is less than fixed fee. {amount} <= {fixedFee}", nameof(amount));
-            }
-
             if (includeFee)
             {
                 amount -= fixedFee;
