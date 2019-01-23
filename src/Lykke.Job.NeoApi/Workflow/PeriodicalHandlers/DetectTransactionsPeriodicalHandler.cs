@@ -8,13 +8,13 @@ using Lykke.Service.NeoApi.Domain.Repositories.Operation;
 using Lykke.Service.NeoApi.Domain.Repositories.Transaction;
 using Lykke.Service.NeoApi.Domain.Repositories.Transaction.Dto;
 using Lykke.Service.NeoApi.Domain.Services.Address;
-using NeoModules.Rest.Interfaces;
+using Lykke.Service.NeoApi.Domain.Services.Blockchain;
 
 namespace Lykke.Job.NeoApi.Workflow.PeriodicalHandlers
 {
     public class DetectTransactionsPeriodicalHandler:IStartable, IStopable
     {
-        private readonly INeoscanService _neoscanService;
+        private readonly IBlockchainProvider _blockchainProvider;
         private readonly ILog _log;
         private readonly TimerTrigger _timerTrigger;
         private readonly IUnconfirmedTransactionRepository _unconfirmedTransactionRepository;
@@ -22,20 +22,19 @@ namespace Lykke.Job.NeoApi.Workflow.PeriodicalHandlers
         private readonly IWalletBalanceService _walletBalanceService;
         private readonly IObservableOperationRepository _observableOperationRepository;
 
-        public DetectTransactionsPeriodicalHandler(
-            INeoscanService neoscanService,
-            ILogFactory logFactory,
+        public DetectTransactionsPeriodicalHandler(ILogFactory logFactory,
             TimeSpan timerPeriod, 
             IUnconfirmedTransactionRepository unconfirmedTransactionRepository, 
             IOperationRepository operationRepository, 
             IWalletBalanceService walletBalanceService,
-            IObservableOperationRepository observableOperationRepository)
+            IObservableOperationRepository observableOperationRepository, 
+            IBlockchainProvider blockchainProvider)
         {
-            _neoscanService = neoscanService;
             _unconfirmedTransactionRepository = unconfirmedTransactionRepository;
             _operationRepository = operationRepository;
             _walletBalanceService = walletBalanceService;
             _observableOperationRepository = observableOperationRepository;
+            _blockchainProvider = blockchainProvider;
 
             _log = logFactory.CreateLog(this);
 
@@ -69,11 +68,11 @@ namespace Lykke.Job.NeoApi.Workflow.PeriodicalHandlers
                 return;
             }
 
-            var blockchainTx = await _neoscanService.GetTransactionAsync(unconfirmedTx.TxHash);
+            var blockchainTx = await _blockchainProvider.GetTransactionAsync(unconfirmedTx.TxHash);
 
-            var isCompleted = blockchainTx?.BlockHash != null; //once a tx included in a block means the tx is confirmed by the 7 consensus nodes and cannt be reversed
+            var isCompleted = blockchainTx?.blockHash != null; //once a tx included in a block means the tx is confirmed by the 7 consensus nodes and cannt be reversed
 
-            var lastBlockHeight = await _neoscanService.GetHeight();
+            var lastBlockHeight = await _blockchainProvider.GetHeightAsync();
 
             var status = isCompleted
                 ? BroadcastStatus.Completed
@@ -81,7 +80,7 @@ namespace Lykke.Job.NeoApi.Workflow.PeriodicalHandlers
 
             await _observableOperationRepository.InsertOrReplace(ObervableOperation.Create(operation, status,
                 unconfirmedTx.TxHash,
-                (int) lastBlockHeight));
+                lastBlockHeight));
 
             if (isCompleted)
             {

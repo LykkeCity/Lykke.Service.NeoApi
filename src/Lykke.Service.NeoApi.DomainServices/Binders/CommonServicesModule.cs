@@ -1,16 +1,18 @@
 ﻿using System;
 using Autofac;
+using Autofac.Builder;
+using Flurl.Http.Configuration;
 using Lykke.Service.NeoApi.Domain.Services.Address;
+using Lykke.Service.NeoApi.Domain.Services.Blockchain;
 using Lykke.Service.NeoApi.Domain.Services.Transaction;
 using Lykke.Service.NeoApi.Domain.Services.TransactionOutputs;
 using Lykke.Service.NeoApi.Domain.Settings;
 using Lykke.Service.NeoApi.DomainServices.Address;
+using Lykke.Service.NeoApi.DomainServices.Blockchain;
 using Lykke.Service.NeoApi.DomainServices.Transaction;
 using Lykke.Service.NeoApi.DomainServices.TransactionOutputs;
 using Lykke.SettingsReader;
 using NeoModules.JsonRpc.Client;
-using NeoModules.Rest.Interfaces;
-using NeoModules.Rest.Services;
 using NeoModules.RPC.Services.Transactions;
 
 namespace Lykke.Service.NeoApi.DomainServices.Binders
@@ -32,9 +34,12 @@ namespace Lykke.Service.NeoApi.DomainServices.Binders
 
             builder.RegisterType<NeoSendRawTransaction>()
                 .AsSelf();
+            builder.RegisterInstance(new PerBaseUrlFlurlClientFactory())
+                .As<IFlurlClientFactory>()
+                .SingleInstance();
 
-            builder.RegisterInstance(new NeoScanRestService(_settings.NeoScanUrl))
-                .As<INeoscanService>()
+            builder.Register(c => new NeoScanBlockchainProvider(c.Resolve<IFlurlClientFactory>().Get(_settings.NeoScanUrl)))
+                .As<IBlockchainProvider>()
                 .SingleInstance();
 
             builder.RegisterType<TransactionBroadcaster>()
