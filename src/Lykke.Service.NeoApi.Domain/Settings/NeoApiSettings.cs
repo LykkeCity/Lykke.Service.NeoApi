@@ -9,7 +9,7 @@ namespace Lykke.Service.NeoApi.Domain.Settings
     {
         public DbSettings Db { get; set; }
 
-        [HttpCheck("/get_height")]
+        [HttpCheck("get_height")]
         public string NeoScanUrl { get; set; }
 
         public string NodeUrl { get; set; }
