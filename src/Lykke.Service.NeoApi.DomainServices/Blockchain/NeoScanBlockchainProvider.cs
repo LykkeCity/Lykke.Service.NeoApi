@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Flurl.Http;
 using Lykke.Service.NeoApi.Domain.Services.Blockchain;
+using Lykke.Service.NeoApi.Domain.Services.Blockchain.Exceptions;
 using Lykke.Service.NeoApi.DomainServices.Blockchain.Contracts;
 using NeoModules.Core;
 using NeoModules.Core.KeyPair;
@@ -75,7 +77,15 @@ namespace Lykke.Service.NeoApi.DomainServices.Blockchain
 
         private async Task<T> GetJson<T>(string segment)
         {
-            return await _flurlClient.Request(segment).GetJsonAsync<T>();
+            try
+            {
+                return await _flurlClient.Request(segment).GetJsonAsync<T>();
+            }
+            catch (FlurlHttpException e)
+            {
+                var body = await (e.Call.Response?.Content?.ReadAsStringAsync() ?? Task.FromResult(""));
+                throw new NeoScanException(e, body);
+            }
         }
     }
 }
