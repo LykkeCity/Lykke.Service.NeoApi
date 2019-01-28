@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Lykke.Service.NeoApi.Domain.Repositories.Outputs;
+using Lykke.Service.NeoApi.Domain.Services.Blockchain;
 using Lykke.Service.NeoApi.Domain.Services.TransactionOutputs;
 using NeoModules.NEP6.Helpers;
 using NeoModules.NEP6.Transactions;
@@ -12,19 +13,20 @@ namespace Lykke.Service.NeoApi.DomainServices.TransactionOutputs
 {
     public class TransactionOutputsService : ITransactionOutputsService
     {
-        private readonly INeoscanService _neoscanService;
+        private readonly IBlockchainProvider _blockchainProvider;
         private readonly ISpentOutputRepository _spentOutputRepository;
 
-        public TransactionOutputsService(INeoscanService neoscanService,
-            ISpentOutputRepository spentOutputRepository)
+        public TransactionOutputsService(
+            ISpentOutputRepository spentOutputRepository,
+            IBlockchainProvider blockchainProvider)
         {
-            _neoscanService = neoscanService;
             _spentOutputRepository = spentOutputRepository;
+            _blockchainProvider = blockchainProvider;
         }
 
         public async Task<IEnumerable<Coin>> GetUnspentOutputsAsync(string address)
         {
-            var blockchainOutputs = await TransactionBuilderHelper.GetUnspent(address, _neoscanService);
+            var blockchainOutputs = await _blockchainProvider.GetUnspentAsync(address);
 
             return await FilterSpentCoinsAsync(blockchainOutputs.ToList());
         }
