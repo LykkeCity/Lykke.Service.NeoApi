@@ -9,6 +9,6 @@ namespace Lykke.Service.NeoApi.Domain.Services.Blockchain
     {
         Task<int> GetHeightAsync();
         Task<IEnumerable<Coin>> GetUnspentAsync(string address);
-        Task<(string txHash, int blockHeight, string blockHash)?> GetTransactionAsync(string txHash);
+        Task<(string txHash, int blockHeight, string blockHash)?> GetTransactionOrDefaultAsync(string txHash);
     }
 }

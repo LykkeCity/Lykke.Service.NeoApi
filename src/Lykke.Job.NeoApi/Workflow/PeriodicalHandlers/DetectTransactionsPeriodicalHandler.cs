@@ -68,7 +68,7 @@ namespace Lykke.Job.NeoApi.Workflow.PeriodicalHandlers
                 return;
             }
 
-            var blockchainTx = await _blockchainProvider.GetTransactionAsync(unconfirmedTx.TxHash);
+            var blockchainTx = await _blockchainProvider.GetTransactionOrDefaultAsync(unconfirmedTx.TxHash);
 
             var isCompleted = blockchainTx?.blockHash != null; //once a tx included in a block means the tx is confirmed by the 7 consensus nodes and cannt be reversed
 

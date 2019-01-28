@@ -13,7 +13,7 @@ using NeoModules.NEP6.Transactions;
 
 namespace Lykke.Service.NeoApi.DomainServices.Blockchain
 {
-    public class NeoScanBlockchainProvider:IBlockchainProvider
+    public class NeoScanBlockchainProvider : IBlockchainProvider
     {
         private readonly IFlurlClient _flurlClient;
 
@@ -58,7 +58,7 @@ namespace Lykke.Service.NeoApi.DomainServices.Blockchain
             return coinList;
         }
 
-        public async Task<(string txHash, int blockHeight, string blockHash)?> GetTransactionAsync(string txHash)
+        public async Task<(string txHash, int blockHeight, string blockHash)?> GetTransactionOrDefaultAsync(string txHash)
         {
             GetTransactionResponse resp;
 

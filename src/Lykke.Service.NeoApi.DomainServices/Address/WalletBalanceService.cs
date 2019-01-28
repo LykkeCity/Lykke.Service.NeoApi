@@ -53,12 +53,13 @@ namespace Lykke.Service.NeoApi.DomainServices.Address
                 await unspentOutputs.Select(p => p.Reference.PrevHash).Distinct()
                     .ForEachAsyncSemaphore(8, async txHash =>
                     {
-                        var tx = await _blockchainProvider.GetTransactionAsync(txHash.ToString().Substring(2));
+                        var tx = await _blockchainProvider.GetTransactionOrDefaultAsync(txHash.ToString().Substring(2));
 
                         if (tx == null)
                         {
-                            throw new ArgumentNullException(nameof(txHash), "Unable to find transaction");
+                            throw new InvalidOperationException($"Unable to find transaction with hash {txHash}");
                         }
+
                         blockHeightFromTxHash.TryAdd(txHash, tx.Value);
                     });
 
