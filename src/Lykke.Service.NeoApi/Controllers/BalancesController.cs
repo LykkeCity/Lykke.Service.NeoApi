@@ -95,8 +95,8 @@ namespace Lykke.Service.NeoApi.Controllers
             return Ok(PaginationResponse.From(padedResult.Continuation, padedResult.Items.Select(p => new WalletBalanceContract
             {
                 Address = p.Address,
-                Balance = MoneyConversionHelper.ToContract(p.Balance),
-                AssetId = Constants.Assets.Neo.AssetId,
+                Balance = MoneyConversionHelper.ToContract(p.Balance, p.AssetId),
+                AssetId = p.AssetId,
                 Block = p.UpdatedAtBlockHeight
             }).ToList().AsReadOnly()));
         }

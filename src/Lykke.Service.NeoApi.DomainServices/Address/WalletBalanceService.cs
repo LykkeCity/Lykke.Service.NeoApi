@@ -2,6 +2,9 @@
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading.Tasks;
+using Common.Log;
+using Lykke.Common.Log;
+using Lykke.Service.NeoApi.Domain;
 using Lykke.Service.NeoApi.Domain.Helpers;
 using Lykke.Service.NeoApi.Domain.Repositories.Pagination;
 using Lykke.Service.NeoApi.Domain.Repositories.Wallet;
@@ -22,6 +25,7 @@ namespace Lykke.Service.NeoApi.DomainServices.Address
         private readonly IWalletBalanceRepository _walletBalanceRepository;
         private readonly IBlockchainProvider _blockchainProvider;
         private readonly ITransactionOutputsService _transactionOutputsService;
+        private readonly ILog _log;
 
         private const int EntityExistsHttpStatusCode = 409;
         private const int EntityNotExistsHttpStatusCode = 404;
@@ -29,15 +33,17 @@ namespace Lykke.Service.NeoApi.DomainServices.Address
         public WalletBalanceService(IObservableWalletRepository observableWalletRepository, 
             IWalletBalanceRepository walletBalanceRepository, 
             ITransactionOutputsService transactionOutputsService, 
-            IBlockchainProvider blockchainProvider)
+            IBlockchainProvider blockchainProvider,
+            ILogFactory logFactory)
         {
             _observableWalletRepository = observableWalletRepository;
             _walletBalanceRepository = walletBalanceRepository;
             _transactionOutputsService = transactionOutputsService;
             _blockchainProvider = blockchainProvider;
+            _log = logFactory.CreateLog(this);
         }
 
-        public async Task<decimal?> UpdateNeoBalance(string address)
+        public async Task<decimal?> UpdateBalance(string address)
         {
             if(await _observableWalletRepository.Get(address) != null)
             {
@@ -74,28 +80,40 @@ namespace Lykke.Service.NeoApi.DomainServices.Address
                         }
 
                         return tx.blockHeight <= lastBlock;
-                    });
-
-                var balance = (decimal) validatedUnspentOutputs
-                        .Sum(p => p.Output.Value);
-
-                if (balance != 0)
-                {
-                    await _walletBalanceRepository.InsertOrReplace(
-                        WalletBalance.Create(address,
-                            balance: balance,
-                            updatedAtBlock: lastBlock));
-                }
-                else
-                {
-                    await _walletBalanceRepository.DeleteIfExist(address);
-                }
+                    }).ToList();
 
 
-                return balance;
+                var neoBalance = (decimal)validatedUnspentOutputs
+                    .Where(p => p.Output.AssetId == Utils.NeoToken)
+                    .Sum(p => p.Output.Value);
+                
+                var gasBalance = (decimal) validatedUnspentOutputs
+                    .Where(p => p.Output.AssetId == Utils.GasToken)
+                    .Sum(p => p.Output.Value);
+
+                await Task.WhenAll(UpdateBalanceInRepo(lastBlock, address, neoBalance, Constants.Assets.Neo.AssetId),
+                    UpdateBalanceInRepo(lastBlock, address, gasBalance, Constants.Assets.Gas.AssetId));;
             }
 
             return null;
+        }
+
+        private async Task UpdateBalanceInRepo(int lastBlock, string address, decimal balance, string assetId)
+        {
+            if (balance != 0)
+            {
+                _log.Info($"[{lastBlock}] Detected balance on {address}: {balance} {assetId}");
+                await _walletBalanceRepository.InsertOrReplace(
+                    WalletBalance.Create(address,
+                        balance: balance,
+                        assetId: assetId,
+                        updatedAtBlock: lastBlock));
+            }
+            else
+            {
+                await _walletBalanceRepository.DeleteIfExist(address, assetId);
+            }
+
         }
 
         public async Task Subscribe(string address)

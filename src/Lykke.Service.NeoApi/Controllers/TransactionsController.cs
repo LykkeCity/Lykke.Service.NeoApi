@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Lykke.Common.Api.Contract.Responses;
@@ -52,7 +53,13 @@ namespace Lykke.Service.NeoApi.Controllers
                 return BadRequest(ErrorResponse.Create("Unable to deserialize request"));
             }
 
-            var amount = MoneyConversionHelper.FromContract(request.Amount);
+            if (!new [] {Constants.Assets.Neo.AssetId, Constants.Assets.Gas.AssetId}.Contains(request.AssetId))
+            {
+
+                return BadRequest(ErrorResponse.Create("Invalid assetId"));
+            }
+
+            var amount = MoneyConversionHelper.FromContract(request.Amount, request.AssetId);
 
             if (amount <= 0)
             {
@@ -63,12 +70,6 @@ namespace Lykke.Service.NeoApi.Controllers
             {
 
                 return BadRequest($"The minimum unit of NEO is 1 and tokens cannot be subdivided.: {amount}");
-            }
-
-            if (request.AssetId != Constants.Assets.Neo.AssetId)
-            {
-
-                return BadRequest(ErrorResponse.Create("Invalid assetId"));
             }
 
             var toAddressValid = _addressValidator.IsAddressValid(request.ToAddress);
@@ -102,14 +103,27 @@ namespace Lykke.Service.NeoApi.Controllers
                 return Conflict();
             }
 
-            var fee = aggregate.IsCashout ? _feeSettings.FixedFee : 0;
-            var tx = await _transactionBuilder.BuildNeoContractTransactionAsync(request.FromAddress,
-                request.ToAddress,
-                amount,
-                request.IncludeFee,
-                fee);
+            Transaction tx;
 
-
+            switch (request.AssetId)
+            {
+                case Constants.Assets.Neo.AssetId:
+                    var fee = aggregate.IsCashout ? _feeSettings.FixedFee : 0;
+                    tx = await _transactionBuilder.BuildNeoContractTransactionAsync(request.FromAddress,
+                        request.ToAddress,
+                        amount,
+                        request.IncludeFee,
+                        fee);
+                    break;
+                case Constants.Assets.Gas.AssetId:
+                    tx = await _transactionBuilder.BuildGasTransactionAsync(request.FromAddress,
+                        request.ToAddress,
+                        amount);
+                    break;
+                default:
+                    throw new ArgumentException("Unknown switch", nameof(request.AssetId));
+            }
+            
             return Ok(new BuildTransactionResponse
             {
                 TransactionContext = TransactionSerializer.Serialize(tx)
@@ -194,8 +208,8 @@ namespace Lykke.Service.NeoApi.Controllers
 
             return Ok(new BroadcastedSingleTransactionResponse
             {
-                Amount = MoneyConversionHelper.ToContract(result.Amount),
-                Fee = MoneyConversionHelper.ToContract(result.Fee),
+                Amount = MoneyConversionHelper.ToContract(result.Amount, result.AssetId),
+                Fee = MoneyConversionHelper.ToContract(result.Fee, result.AssetId),
                 OperationId = result.OperationId,
                 Hash = result.TxHash,
                 Timestamp = result.Updated,
