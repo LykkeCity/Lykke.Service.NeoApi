@@ -71,7 +71,7 @@ namespace Lykke.Service.NeoApi.DomainServices.Transaction
                     {
                         AssetId = Utils.GasToken,
                         ScriptHash = to.ToScriptHash(),
-                        Value =  BigDecimal.Parse(amount.ToString("F", CultureInfo.InvariantCulture),
+                        Value =  BigDecimal.Parse(amount.ToString(CultureInfo.InvariantCulture),
                             Constants.Assets.Gas.Accuracy)
                     }
                 }.Select(p => p.ToTxOutput()).ToArray(),

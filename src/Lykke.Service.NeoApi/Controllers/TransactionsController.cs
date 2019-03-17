@@ -66,9 +66,8 @@ namespace Lykke.Service.NeoApi.Controllers
                 return BadRequest(ErrorResponse.Create($"Amount can't be less or equal to zero: {amount}"));
             }
 
-            if (amount % 1 != 0)
+            if (request.AssetId == Constants.Assets.Neo.AssetId && amount % 1 != 0)
             {
-
                 return BadRequest($"The minimum unit of NEO is 1 and tokens cannot be subdivided.: {amount}");
             }
 
