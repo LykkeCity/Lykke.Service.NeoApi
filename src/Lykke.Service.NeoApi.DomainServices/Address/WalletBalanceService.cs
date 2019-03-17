@@ -50,7 +50,6 @@ namespace Lykke.Service.NeoApi.DomainServices.Address
                 var lastBlock = await _blockchainProvider.GetHeightAsync();
 
                 var unspentOutputs = (await _transactionOutputsService.GetUnspentOutputsAsync(address))
-                    .Where(p => p.Output.AssetId == Utils.NeoToken)
                     .ToList();
 
                 var blockHeightFromTxHash = new ConcurrentDictionary<UInt256,
