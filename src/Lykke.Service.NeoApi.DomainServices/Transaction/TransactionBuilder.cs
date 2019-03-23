@@ -59,6 +59,35 @@ namespace Lykke.Service.NeoApi.DomainServices.Transaction
             return tx;
         }
 
+        public async Task<NeoModules.NEP6.Transactions.Transaction> BuildGasTransactionAsync(string @from, string to, decimal amount)
+        {
+            var tx = new ContractTransaction
+            {
+                Attributes = new TransactionAttribute[0],
+                Inputs = new CoinReference[0],
+                Outputs = new List<TransferOutput>
+                {
+                    new TransferOutput
+                    {
+                        AssetId = Utils.GasToken,
+                        ScriptHash = to.ToScriptHash(),
+                        Value =  BigDecimal.Parse(amount.ToString(CultureInfo.InvariantCulture),
+                            Constants.Assets.Gas.Accuracy)
+                    }
+                }.Select(p => p.ToTxOutput()).ToArray(),
+                Witnesses = new Witness[0]
+            };
+
+            var unspentOutputs = await _transactionOutputsService.GetUnspentOutputsAsync(from);
+
+            tx = MakeTransaction(tx,
+                unspentOutputs,
+                from.ToScriptHash(),
+                changeAddress: from.ToScriptHash());
+
+            return tx;
+        }
+
         //based on  https://github.com/CityOfZion/NeoModules/blob/master/src/NeoModules.NEP6/AccountSignerTransactionManager.cs 
         private T MakeTransaction<T>(T tx, 
             IEnumerable<Coin> unspentOutputs,
