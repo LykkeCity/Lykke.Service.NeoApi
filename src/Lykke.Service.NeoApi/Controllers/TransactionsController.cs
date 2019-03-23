@@ -161,12 +161,11 @@ namespace Lykke.Service.NeoApi.Controllers
             {
                 return Conflict();
             }
-
-
+            
             return Ok(new BuildedClaimTransactionResponse
             {
                 ClaimedGas = builded.amount,
-                TransactionContext = TransactionSerializer.Serialize(builded.tx, TransactionType.ClaimTransaction);
+                TransactionContext = TransactionSerializer.Serialize(builded.tx, TransactionType.ClaimTransaction)
             });
         }
 
