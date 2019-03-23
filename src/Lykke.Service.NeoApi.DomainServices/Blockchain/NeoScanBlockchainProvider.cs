@@ -75,6 +75,14 @@ namespace Lykke.Service.NeoApi.DomainServices.Blockchain
             return (resp.TxHash, resp.BlockHeight, resp.BlockHash);
         }
 
+        public async Task<(decimal gasAmoumt, IEnumerable<CoinReference> coinReferences)> GetClaimableAsync(string address)
+        {
+            var resp = await GetJson<GetClaimableResponse>("address");
+
+            return ()
+            throw new NotImplementedException();
+        }
+
         private async Task<T> GetJson<T>(string segment)
         {
             try
