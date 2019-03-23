@@ -36,6 +36,8 @@ namespace Lykke.Service.NeoApi.AzureRepositories.Operation
 
         public DateTime? DetectedOnBlockchain { get; set; }
 
+        public bool IsClaim { get; set; }
+
         public static OperationEntity FromDomain(OperationAggregate aggregate)
         {
             return new OperationEntity
@@ -68,7 +70,8 @@ namespace Lykke.Service.NeoApi.AzureRepositories.Operation
                 includeFee: IncludeFee,
                 insertedAt: InsertedAt,
                 broadcastedAt: BroadcastedAt,
-                detectedOnBlockchain: DetectedOnBlockchain);
+                detectedOnBlockchain: DetectedOnBlockchain,
+                isClaim: IsClaim);
         }
     }
 }

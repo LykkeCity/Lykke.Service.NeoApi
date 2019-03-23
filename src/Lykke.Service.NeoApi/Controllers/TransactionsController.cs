@@ -18,6 +18,8 @@ using Lykke.Service.NeoApi.Helpers.Transaction;
 using Lykke.Service.NeoApi.Helpers.Transaction.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using NeoModules.NEP6.Transactions;
+using TransactionType = NeoModules.NEP6.Transactions.TransactionType;
+using Lykke.Service.NeoApi.Contracts;
 
 namespace Lykke.Service.NeoApi.Controllers
 {
@@ -125,7 +127,46 @@ namespace Lykke.Service.NeoApi.Controllers
             
             return Ok(new BuildTransactionResponse
             {
-                TransactionContext = TransactionSerializer.Serialize(tx)
+                TransactionContext = TransactionSerializer.Serialize(tx, TransactionType.ContractTransaction)
+            });
+        }
+
+
+        [HttpPost("api/transactions/claim")]
+        public async Task<IActionResult> BuildClaim([FromBody] BuildClaimTransactionRequest request)
+        {
+            if (request == null)
+            {
+                return BadRequest(ErrorResponse.Create("Unable to deserialize request"));
+            }
+
+            var addressValid = _addressValidator.IsAddressValid(request.Address);
+            if (!addressValid)
+            {
+                return BadRequest(ErrorResponse.Create("Invalid address"));
+            }
+            
+            var builded = await _transactionBuilder.BuildClaimTransactions(request.Address);
+
+            var aggregate = await _operationRepository.GetOrInsert(request.OperationId,
+                () => OperationAggregate.StartNew(request.OperationId,
+                    fromAddress: request.Address,
+                    toAddress: request.Address,
+                    amount: builded.amount,
+                    assetId: Constants.Assets.Gas.AssetId,
+                    fee: 0,
+                    includeFee: false));
+
+            if (aggregate.IsBroadcasted)
+            {
+                return Conflict();
+            }
+
+
+            return Ok(new BuildedClaimTransactionResponse
+            {
+                ClaimedGas = builded.amount,
+                TransactionContext = TransactionSerializer.Serialize(builded.tx, TransactionType.ClaimTransaction);
             });
         }
 
@@ -147,7 +188,7 @@ namespace Lykke.Service.NeoApi.Controllers
             Transaction tx;
             try
             {
-                tx = TransactionSerializer.Deserialize(request.SignedTransaction);
+                tx = TransactionSerializer.Deserialize(request.SignedTransaction).transaction;
             }
             catch (InvalidTransactionException)
             {

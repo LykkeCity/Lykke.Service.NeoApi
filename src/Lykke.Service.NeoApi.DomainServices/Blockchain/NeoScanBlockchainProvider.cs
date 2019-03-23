@@ -77,10 +77,13 @@ namespace Lykke.Service.NeoApi.DomainServices.Blockchain
 
         public async Task<(decimal gasAmoumt, IEnumerable<CoinReference> coinReferences)> GetClaimableAsync(string address)
         {
-            var resp = await GetJson<GetClaimableResponse>("address");
+            var resp = await GetJson<GetClaimableResponse>($"/get_claimable/{address}");
 
-            return ()
-            throw new NotImplementedException();
+            return (resp.Unclaimed, resp.Claimable.Select(p => new CoinReference
+            {
+                PrevHash = UInt256.Parse(p.Txid),
+                PrevIndex = (ushort) p.N
+            }).ToList());
         }
 
         private async Task<T> GetJson<T>(string segment)
