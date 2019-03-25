@@ -110,6 +110,7 @@ namespace Lykke.Service.NeoApi.DomainServices.Transaction
                         Value = Fixed8.FromDecimal(claimData.gasAmoumt),
                     }
                 },
+                Witnesses = new Witness[0],
                 Attributes = new TransactionAttribute[0]
             };
 

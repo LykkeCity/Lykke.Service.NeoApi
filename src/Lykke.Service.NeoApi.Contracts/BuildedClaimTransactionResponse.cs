@@ -8,7 +8,7 @@ namespace Lykke.Service.NeoApi.Contracts
     public class BuildedClaimTransactionResponse
     {
         [JsonProperty("claimedGas")]
-        public decimal ClaimedGas { get; set; }
+        public string ClaimedGas { get; set; }
 
         [JsonProperty("transactionContext")]
         public string TransactionContext { get; set; }

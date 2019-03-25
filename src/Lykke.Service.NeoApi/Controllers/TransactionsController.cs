@@ -164,7 +164,7 @@ namespace Lykke.Service.NeoApi.Controllers
             
             return Ok(new BuildedClaimTransactionResponse
             {
-                ClaimedGas = builded.amount,
+                ClaimedGas = MoneyConversionHelper.ToContract(builded.amount, Constants.Assets.Gas.AssetId),
                 TransactionContext = TransactionSerializer.Serialize(builded.tx, TransactionType.ClaimTransaction)
             });
         }

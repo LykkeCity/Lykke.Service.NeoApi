@@ -5,7 +5,7 @@ namespace Lykke.Service.NeoApi.DomainServices.Blockchain.Contracts
 {
     public class GetClaimableResponse
     {
-        [JsonProperty("height")]
+        [JsonProperty("unclaimed")]
         public decimal Unclaimed { get; set; }
 
         [JsonProperty("address")]
