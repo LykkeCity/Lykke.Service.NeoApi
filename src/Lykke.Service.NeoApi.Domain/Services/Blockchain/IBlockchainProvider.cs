@@ -12,5 +12,6 @@ namespace Lykke.Service.NeoApi.Domain.Services.Blockchain
         Task<(string txHash, int blockHeight, string blockHash)?> GetTransactionOrDefaultAsync(string txHash);
 
         Task<(decimal gasAmoumt, IEnumerable<CoinReference> coinReferences)> GetClaimableAsync(string address);
+        Task<decimal> GetUnclaimedAsync(string address);
     }
 }

@@ -92,10 +92,10 @@ namespace Lykke.Service.NeoApi.DomainServices.Transaction
             return tx;
         }
 
-        public async Task<(ClaimTransaction tx, decimal amount)> BuildClaimTransactions(string address)
+        public async Task<(ClaimTransaction tx, decimal availiableGas, decimal unclaimedGas)> BuildClaimTransactions(string address)
         {
             var claimData = await _blockchainProvider.GetClaimableAsync(address);
-
+            var unclaimedGas = await _blockchainProvider.GetUnclaimedAsync(address);
             var tx = new ClaimTransaction
             {
                 Version = 0,
@@ -114,7 +114,7 @@ namespace Lykke.Service.NeoApi.DomainServices.Transaction
                 Attributes = new TransactionAttribute[0]
             };
 
-            return (tx, claimData.gasAmoumt);
+            return (tx, claimData.gasAmoumt, unclaimedGas);
         }
 
         //based on  https://github.com/CityOfZion/NeoModules/blob/master/src/NeoModules.NEP6/AccountSignerTransactionManager.cs 

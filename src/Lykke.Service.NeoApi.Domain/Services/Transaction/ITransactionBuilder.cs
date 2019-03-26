@@ -6,6 +6,6 @@ namespace Lykke.Service.NeoApi.Domain.Services.Transaction
     {
         Task<NeoModules.NEP6.Transactions.Transaction> BuildNeoContractTransactionAsync(string from, string to, decimal amount, bool includeFee, decimal fixedFee);
         Task<NeoModules.NEP6.Transactions.Transaction> BuildGasTransactionAsync(string from, string to, decimal amount);
-        Task<(NeoModules.NEP6.Transactions.ClaimTransaction tx, decimal amount)> BuildClaimTransactions(string address);
+        Task<(NeoModules.NEP6.Transactions.ClaimTransaction tx, decimal availiableGas, decimal unclaimedGas)> BuildClaimTransactions(string address);
     }
 }

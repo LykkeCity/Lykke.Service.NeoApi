@@ -152,7 +152,7 @@ namespace Lykke.Service.NeoApi.Controllers
                 () => OperationAggregate.StartNew(request.OperationId,
                     fromAddress: request.Address,
                     toAddress: request.Address,
-                    amount: builded.amount,
+                    amount: builded.availiableGas,
                     assetId: Constants.Assets.Gas.AssetId,
                     fee: 0,
                     includeFee: false));
@@ -164,7 +164,8 @@ namespace Lykke.Service.NeoApi.Controllers
             
             return Ok(new BuildedClaimTransactionResponse
             {
-                ClaimedGas = MoneyConversionHelper.ToContract(builded.amount, Constants.Assets.Gas.AssetId),
+                ClaimedGas = MoneyConversionHelper.ToContract(builded.availiableGas, Constants.Assets.Gas.AssetId),
+                AllGas = MoneyConversionHelper.ToContract(builded.unclaimedGas, Constants.Assets.Gas.AssetId),
                 TransactionContext = TransactionSerializer.Serialize(builded.tx, TransactionType.ClaimTransaction)
             });
         }

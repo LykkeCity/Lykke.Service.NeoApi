@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -84,6 +83,12 @@ namespace Lykke.Service.NeoApi.DomainServices.Blockchain
                 PrevHash = UInt256.Parse(p.Txid),
                 PrevIndex = (ushort) p.N
             }).ToList());
+        }
+
+        public async Task<decimal> GetUnclaimedAsync(string address)
+        {
+            var resp = await GetJson<GetUnclaimedResponse>($"/get_unclaimed/{address}");
+            return resp.Unclaimed;
         }
 
         private async Task<T> GetJson<T>(string segment)
