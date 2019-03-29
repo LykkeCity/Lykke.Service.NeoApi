@@ -4,10 +4,6 @@ namespace Lykke.Service.NeoApi.Contracts
 {
     public class BuildedClaimTransactionResponse
     {
-        //availiable gas, unclaimed gas reference
-        //https://docs.neo.org/en-us/faq.html -> What is GAS？How to acquire GAS？
-        //https://github.com/PeterLinX/Introduction-to-Neo/blob/master/en/Neo%20Gas.md
-
         /// <summary>
         /// Claimed gas during transaction
         /// </summary>

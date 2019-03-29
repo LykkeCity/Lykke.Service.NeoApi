@@ -31,9 +31,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lykke.Service.NeoApi", "src
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lykke.Job.NeoApi", "src\Lykke.Job.NeoApi\Lykke.Job.NeoApi.csproj", "{5566FD3E-0DB6-4BF3-A98D-4A1181B3E02C}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3. Contract", "3. Contract", "{A0BC0AAF-F8A8-4653-BB29-DE1FF49E45E3}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3. Client", "3. Client", "{A0BC0AAF-F8A8-4653-BB29-DE1FF49E45E3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lykke.Service.NeoApi.Contracts", "src\Lykke.Service.NeoApi.Contracts\Lykke.Service.NeoApi.Contracts.csproj", "{2C3AD4D2-7041-4D54-9302-7A082ED6649E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lykke.Service.NeoApi.Contracts", "src\Lykke.Service.NeoApi.Contracts\Lykke.Service.NeoApi.Contracts.csproj", "{2C3AD4D2-7041-4D54-9302-7A082ED6649E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lykke.Service.NeoApi.Client", "src\Lykke.Service.NeoApi.Client\Lykke.Service.NeoApi.Client.csproj", "{FD325EA6-39EA-4432-9BF9-08FE242ECDB7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -69,6 +71,10 @@ Global
 		{2C3AD4D2-7041-4D54-9302-7A082ED6649E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2C3AD4D2-7041-4D54-9302-7A082ED6649E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2C3AD4D2-7041-4D54-9302-7A082ED6649E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FD325EA6-39EA-4432-9BF9-08FE242ECDB7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FD325EA6-39EA-4432-9BF9-08FE242ECDB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FD325EA6-39EA-4432-9BF9-08FE242ECDB7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FD325EA6-39EA-4432-9BF9-08FE242ECDB7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -81,6 +87,7 @@ Global
 		{E414FDB9-FEEA-4CD0-9BBA-D1541601DF29} = {EE7F3159-E06C-497F-96D4-DB2A6B03A6AB}
 		{5566FD3E-0DB6-4BF3-A98D-4A1181B3E02C} = {EE7F3159-E06C-497F-96D4-DB2A6B03A6AB}
 		{2C3AD4D2-7041-4D54-9302-7A082ED6649E} = {A0BC0AAF-F8A8-4653-BB29-DE1FF49E45E3}
+		{FD325EA6-39EA-4432-9BF9-08FE242ECDB7} = {A0BC0AAF-F8A8-4653-BB29-DE1FF49E45E3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EB6C0EF4-AA6A-444D-8603-3669F73A58BC}
