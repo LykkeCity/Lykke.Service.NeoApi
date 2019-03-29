@@ -33,9 +33,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lykke.Job.NeoApi", "src\Lyk
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3. Client", "3. Client", "{A0BC0AAF-F8A8-4653-BB29-DE1FF49E45E3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lykke.Service.NeoApi.Contracts", "src\Lykke.Service.NeoApi.Contracts\Lykke.Service.NeoApi.Contracts.csproj", "{2C3AD4D2-7041-4D54-9302-7A082ED6649E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lykke.Service.NeoApi.Contracts", "client\Lykke.Service.NeoApi.Contracts\Lykke.Service.NeoApi.Contracts.csproj", "{2C3AD4D2-7041-4D54-9302-7A082ED6649E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lykke.Service.NeoApi.Client", "src\Lykke.Service.NeoApi.Client\Lykke.Service.NeoApi.Client.csproj", "{FD325EA6-39EA-4432-9BF9-08FE242ECDB7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lykke.Service.NeoApi.Client", "client\Lykke.Service.NeoApi.Client\Lykke.Service.NeoApi.Client.csproj", "{FD325EA6-39EA-4432-9BF9-08FE242ECDB7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

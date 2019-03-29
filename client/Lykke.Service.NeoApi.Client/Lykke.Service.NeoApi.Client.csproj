@@ -15,4 +15,5 @@
     <ProjectReference Include="..\Lykke.Service.NeoApi.Contracts\Lykke.Service.NeoApi.Contracts.csproj" PrivateAssets="All" />
   </ItemGroup>
 
+
 </Project>
