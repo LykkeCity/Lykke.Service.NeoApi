@@ -32,8 +32,8 @@
     <PackageReference Include="NeoModules.RPC" Version="1.2.0" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\client\Lykke.Service.NeoApi.Contracts\Lykke.Service.NeoApi.Contracts.csproj" />
     <ProjectReference Include="..\Lykke.Service.NeoApi.AzureRepositories\Lykke.Service.NeoApi.AzureRepositories.csproj" />
-    <ProjectReference Include="..\Lykke.Service.NeoApi.Contracts\Lykke.Service.NeoApi.Contracts.csproj" />
     <ProjectReference Include="..\Lykke.Service.NeoApi.Domain\Lykke.Service.NeoApi.Domain.csproj" />
     <ProjectReference Include="..\Lykke.Service.NeoApi.DomainServices\Lykke.Service.NeoApi.DomainServices.csproj" />
   </ItemGroup>
