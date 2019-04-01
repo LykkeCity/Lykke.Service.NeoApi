@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Net;
 using System.Threading.Tasks;
+using Common;
 using Flurl.Http;
 using Lykke.Service.BlockchainApi.Contract;
 using Lykke.Service.NeoApi.Contracts;
@@ -22,11 +24,36 @@ namespace Lykke.Service.NeoApi.Client
             {
                 Address = address,
                 OperationId = operationId
-            }).ReceiveJson<BuildedClaimTransactionResponse>();
+            });
 
-            return (claimedGas: Conversions.CoinsFromContract(resp.ClaimedGas, GasAssetDivisibility),
-                allGas: Conversions.CoinsFromContract(resp.AllGas, GasAssetDivisibility),
-                transactionContext: resp.TransactionContext);
+            switch (resp.StatusCode)
+            {
+                case HttpStatusCode.OK:
+                {
+                    var buildedTx = (await resp.Content.ReadAsStringAsync())
+                        .DeserializeJson<BuildedClaimTransactionResponse>();
+
+                    return (claimedGas: Conversions.CoinsFromContract(buildedTx.ClaimedGas, GasAssetDivisibility),
+                        allGas: Conversions.CoinsFromContract(buildedTx.AllGas, GasAssetDivisibility),
+                        transactionContext: buildedTx.TransactionContext);
+                }
+                case HttpStatusCode.Accepted:
+                {
+                    throw new NeoClaimTransactionException(
+                        NeoClaimTransactionException.ErrorCode.ClaimableGasNotAvailiable,
+                        $"Resp: {await resp.Content.ReadAsStringAsync()}");
+                }
+
+                case HttpStatusCode.Conflict:
+                {
+                    throw new NeoClaimTransactionException(
+                        NeoClaimTransactionException.ErrorCode.TransactionAlreadyBroadcased);
+                }
+
+                default:
+                     throw new NeoClaimUnknownResponseException(
+                         $"Unknown response {resp.StatusCode} : {await resp.Content.ReadAsStringAsync()}");
+            }
         }
     }
 }

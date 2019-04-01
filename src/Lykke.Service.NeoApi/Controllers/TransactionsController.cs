@@ -147,7 +147,7 @@ namespace Lykke.Service.NeoApi.Controllers
             }
             
             var builded = await _transactionBuilder.BuildClaimTransactions(request.Address);
-
+            
             var aggregate = await _operationRepository.GetOrInsert(request.OperationId,
                 () => OperationAggregate.StartNew(request.OperationId,
                     fromAddress: request.Address,
@@ -161,7 +161,17 @@ namespace Lykke.Service.NeoApi.Controllers
             {
                 return Conflict();
             }
-            
+
+            if (!builded.tx.Claims.Any())
+            {
+                return Accepted(new BuildedClaimTransactionResponse
+                {
+                    ClaimedGas = MoneyConversionHelper.ToContract(builded.availiableGas, Constants.Assets.Gas.AssetId),
+                    AllGas = MoneyConversionHelper.ToContract(builded.unclaimedGas, Constants.Assets.Gas.AssetId),
+                    TransactionContext = TransactionSerializer.Serialize(builded.tx, TransactionType.ClaimTransaction)
+                });
+            }
+
             return Ok(new BuildedClaimTransactionResponse
             {
                 ClaimedGas = MoneyConversionHelper.ToContract(builded.availiableGas, Constants.Assets.Gas.AssetId),
