@@ -15,5 +15,11 @@
     <ProjectReference Include="..\Lykke.Service.NeoApi.Contracts\Lykke.Service.NeoApi.Contracts.csproj" PrivateAssets="All" />
   </ItemGroup>
 
+  <ItemGroup Label="dotnet pack instructions">
+    <Content Include="$(OutputPath)Lykke.Service.NeoApi.Contracts.dll">
+      <Pack>true</Pack>
+      <PackagePath>lib/netcoreapp2.1</PackagePath>
+    </Content>
+  </ItemGroup>
 
 </Project>
