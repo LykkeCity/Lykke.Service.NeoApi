@@ -2,6 +2,7 @@
 using System.Net;
 using System.Threading.Tasks;
 using Common;
+using Flurl;
 using Flurl.Http;
 using Lykke.Service.BlockchainApi.Contract;
 using Lykke.Service.NeoApi.Contracts;
@@ -20,7 +21,7 @@ namespace Lykke.Service.NeoApi.Client
 
         public async Task<(decimal claimedGas, decimal allGas, string transactionContext)> BuildClaimTransacionAsync(Guid operationId, string address)
         {
-            var resp = await _neoApiBaseUrl.PostJsonAsync(new BuildClaimTransactionRequest
+            var resp = await _neoApiBaseUrl.AppendPathSegment("/api/transactions/claim").PostJsonAsync(new BuildClaimTransactionRequest
             {
                 Address = address,
                 OperationId = operationId
