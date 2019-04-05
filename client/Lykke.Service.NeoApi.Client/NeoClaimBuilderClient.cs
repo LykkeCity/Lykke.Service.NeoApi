@@ -21,7 +21,9 @@ namespace Lykke.Service.NeoApi.Client
 
         public async Task<(decimal claimedGas, decimal allGas, string transactionContext)> BuildClaimTransacionAsync(Guid operationId, string address)
         {
-            var resp = await _neoApiBaseUrl.AppendPathSegment("/api/transactions/claim").PostJsonAsync(new BuildClaimTransactionRequest
+            var resp = await _neoApiBaseUrl
+                .AllowHttpStatus(HttpStatusCode.Conflict)
+                .AppendPathSegment("/api/transactions/claim").PostJsonAsync(new BuildClaimTransactionRequest
             {
                 Address = address,
                 OperationId = operationId
