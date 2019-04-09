@@ -8,6 +8,7 @@ namespace Lykke.Service.NeoApi.Domain.Repositories.Wallet
     {
         Task InsertOrReplace(IWalletBalance balance);
 
+        Task DeleteIfExist(string address, string assetId);
         Task DeleteIfExist(string address);
         Task<IPaginationResult<IWalletBalance>> GetBalances(int take, string continuation);
     }

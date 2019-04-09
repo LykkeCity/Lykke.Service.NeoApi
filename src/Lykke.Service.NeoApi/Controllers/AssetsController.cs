@@ -19,7 +19,14 @@ namespace Lykke.Service.NeoApi.Controllers
                 Accuracy = Constants.Assets.Neo.Accuracy, 
                 Name = Constants.Assets.Neo.Name,
                 Address = null
-            }
+            },
+            new AssetResponse
+            {
+                AssetId = Constants.Assets.Gas.AssetId,
+                Accuracy = Constants.Assets.Gas.Accuracy,
+                Name = Constants.Assets.Gas.Name,
+                Address = null
+            },
         };
 
         [HttpGet("api/assets")]

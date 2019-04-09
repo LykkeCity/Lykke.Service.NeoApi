@@ -58,7 +58,7 @@ namespace Lykke.Service.NeoApi.AzureRepositories.Binders
             builder.Register(p => new WalletBalanceRepository(
                     AzureTableStorage<WalletBalanceEntity>.Create(
                         connString,
-                        "NeoWalletBalances",
+                        "NeoWalletBalancesV2",
                         p.Resolve<ILogFactory>())))
                 .As<IWalletBalanceRepository>();
 
