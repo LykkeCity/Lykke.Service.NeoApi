@@ -146,13 +146,13 @@ namespace Lykke.Service.NeoApi.Controllers
                 return BadRequest(ErrorResponse.Create("Invalid address"));
             }
             
-            var builded = await _transactionBuilder.BuildClaimTransactions(request.Address);
+            var built = await _transactionBuilder.BuildClaimTransactions(request.Address);
             
             var aggregate = await _operationRepository.GetOrInsert(request.OperationId,
                 () => OperationAggregate.StartNew(request.OperationId,
                     fromAddress: request.Address,
                     toAddress: request.Address,
-                    amount: builded.availiableGas,
+                    amount: built.availiableGas,
                     assetId: Constants.Assets.Gas.AssetId,
                     fee: 0,
                     includeFee: false));
@@ -162,21 +162,21 @@ namespace Lykke.Service.NeoApi.Controllers
                 return Conflict();
             }
 
-            if (!builded.tx.Claims.Any())
+            if (!built.tx.Claims.Any())
             {
-                return Accepted(new BuildedClaimTransactionResponse
+                return Accepted(new BuiltClaimTransactionResponse
                 {
-                    ClaimedGas = MoneyConversionHelper.ToContract(builded.availiableGas, Constants.Assets.Gas.AssetId),
-                    AllGas = MoneyConversionHelper.ToContract(builded.unclaimedGas, Constants.Assets.Gas.AssetId),
-                    TransactionContext = TransactionSerializer.Serialize(builded.tx, TransactionType.ClaimTransaction)
+                    ClaimedGas = MoneyConversionHelper.ToContract(built.availiableGas, Constants.Assets.Gas.AssetId),
+                    AllGas = MoneyConversionHelper.ToContract(built.unclaimedGas, Constants.Assets.Gas.AssetId),
+                    TransactionContext = TransactionSerializer.Serialize(built.tx, TransactionType.ClaimTransaction)
                 });
             }
 
-            return Ok(new BuildedClaimTransactionResponse
+            return Ok(new BuiltClaimTransactionResponse
             {
-                ClaimedGas = MoneyConversionHelper.ToContract(builded.availiableGas, Constants.Assets.Gas.AssetId),
-                AllGas = MoneyConversionHelper.ToContract(builded.unclaimedGas, Constants.Assets.Gas.AssetId),
-                TransactionContext = TransactionSerializer.Serialize(builded.tx, TransactionType.ClaimTransaction)
+                ClaimedGas = MoneyConversionHelper.ToContract(built.availiableGas, Constants.Assets.Gas.AssetId),
+                AllGas = MoneyConversionHelper.ToContract(built.unclaimedGas, Constants.Assets.Gas.AssetId),
+                TransactionContext = TransactionSerializer.Serialize(built.tx, TransactionType.ClaimTransaction)
             });
         }
 

@@ -2,7 +2,7 @@
 
 namespace Lykke.Service.NeoApi.Contracts
 {
-    public class BuildedClaimTransactionResponse
+    public class BuiltClaimTransactionResponse
     {
         /// <summary>
         /// Claimed gas during transaction

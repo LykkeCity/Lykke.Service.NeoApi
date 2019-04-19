@@ -34,7 +34,7 @@ namespace Lykke.Service.NeoApi.Client
                 case HttpStatusCode.OK:
                 {
                     var buildedTx = (await resp.Content.ReadAsStringAsync())
-                        .DeserializeJson<BuildedClaimTransactionResponse>();
+                        .DeserializeJson<BuiltClaimTransactionResponse>();
 
                     return (claimedGas: Conversions.CoinsFromContract(buildedTx.ClaimedGas, GasAssetDivisibility),
                         allGas: Conversions.CoinsFromContract(buildedTx.AllGas, GasAssetDivisibility),
