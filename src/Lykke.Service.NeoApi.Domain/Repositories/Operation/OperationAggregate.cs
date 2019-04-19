@@ -24,6 +24,8 @@ namespace Lykke.Service.NeoApi.Domain.Repositories.Operation
 
         public DateTime InsertedAt { get; }
 
+        public bool IsClaim { get; set; }
+
         public DateTime? BroadcastedAt { get; private set; }
         public DateTime? DetectedOnBlockchain { get; private set; }
 
@@ -40,7 +42,8 @@ namespace Lykke.Service.NeoApi.Domain.Repositories.Operation
             bool includeFee,
             DateTime insertedAt,
             DateTime? broadcastedAt,
-            DateTime? detectedOnBlockchain)
+            DateTime? detectedOnBlockchain,
+            bool isClaim)
         {
             Version = version;
             OperationId = operationId;
@@ -53,6 +56,7 @@ namespace Lykke.Service.NeoApi.Domain.Repositories.Operation
             InsertedAt = insertedAt;
             BroadcastedAt = broadcastedAt;
             DetectedOnBlockchain = detectedOnBlockchain;
+            IsClaim = isClaim;
         }
 
         public static OperationAggregate StartNew(
@@ -62,7 +66,8 @@ namespace Lykke.Service.NeoApi.Domain.Repositories.Operation
             string assetId,
             decimal amount,
             decimal fee,
-            bool includeFee)
+            bool includeFee,
+            bool isClaim = false)
         {
             return new OperationAggregate(version: null,
                 operationId: operationId,
@@ -74,7 +79,8 @@ namespace Lykke.Service.NeoApi.Domain.Repositories.Operation
                 includeFee: includeFee, 
                 insertedAt: DateTime.UtcNow, 
                 broadcastedAt: null, 
-                detectedOnBlockchain: null);
+                detectedOnBlockchain: null,
+                isClaim: isClaim);
         }
 
         public void OnBroadcasted(DateTime moment)

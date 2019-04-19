@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Lykke.Service.NeoApi.Domain;
+using Lykke.Service.NeoApi.Domain.Services.Blockchain;
 using Lykke.Service.NeoApi.Domain.Services.Transaction;
 using Lykke.Service.NeoApi.Domain.Services.Transaction.Exceptions;
 using Lykke.Service.NeoApi.Domain.Services.TransactionOutputs;
@@ -18,10 +19,13 @@ namespace Lykke.Service.NeoApi.DomainServices.Transaction
     internal class TransactionBuilder:ITransactionBuilder
     {
         private readonly ITransactionOutputsService _transactionOutputsService;
+        private readonly IBlockchainProvider _blockchainProvider;
 
-        public TransactionBuilder(ITransactionOutputsService transactionOutputsService)
+        public TransactionBuilder(ITransactionOutputsService transactionOutputsService, 
+            IBlockchainProvider blockchainProvider)
         {
             _transactionOutputsService = transactionOutputsService;
+            _blockchainProvider = blockchainProvider;
         }
 
         public async Task<NeoModules.NEP6.Transactions.Transaction> BuildNeoContractTransactionAsync(string from, string to, decimal amount, bool includeFee, decimal fixedFee)
@@ -86,6 +90,31 @@ namespace Lykke.Service.NeoApi.DomainServices.Transaction
                 changeAddress: from.ToScriptHash());
 
             return tx;
+        }
+
+        public async Task<(ClaimTransaction tx, decimal availiableGas, decimal unclaimedGas)> BuildClaimTransactions(string address)
+        {
+            var claimData = await _blockchainProvider.GetClaimableAsync(address);
+            var unclaimedGas = await _blockchainProvider.GetUnclaimedAsync(address);
+            var tx = new ClaimTransaction
+            {
+                Version = 0,
+                Claims = claimData.coinReferences.ToArray(),
+                Inputs = new CoinReference[0],
+                Outputs = new[]
+                {
+                    new TransactionOutput
+                    {
+                        ScriptHash = address.ToScriptHash(),
+                        AssetId = Utils.GasToken,
+                        Value = Fixed8.FromDecimal(claimData.gasAmoumt),
+                    }
+                },
+                Witnesses = new Witness[0],
+                Attributes = new TransactionAttribute[0]
+            };
+
+            return (tx, claimData.gasAmoumt, unclaimedGas);
         }
 
         //based on  https://github.com/CityOfZion/NeoModules/blob/master/src/NeoModules.NEP6/AccountSignerTransactionManager.cs 

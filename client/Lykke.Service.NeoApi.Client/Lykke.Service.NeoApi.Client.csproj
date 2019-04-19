@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <AssemblyName>Lykke.Service.NeoApi.Client</AssemblyName>
+    <Version>1.0.0</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Flurl.Http" Version="2.4.1" />
+    <PackageReference Include="Lykke.Service.BlockchainApi.Contract" Version="13.2.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Lykke.Service.NeoApi.Contracts\Lykke.Service.NeoApi.Contracts.csproj" PrivateAssets="All" />
+  </ItemGroup>
+
+  <ItemGroup Label="dotnet pack instructions">
+    <Content Include="$(OutputPath)Lykke.Service.NeoApi.Contracts.dll">
+      <Pack>true</Pack>
+      <PackagePath>lib/netcoreapp2.1</PackagePath>
+    </Content>
+  </ItemGroup>
+
+</Project>
