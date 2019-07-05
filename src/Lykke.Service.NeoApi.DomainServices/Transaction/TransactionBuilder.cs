@@ -153,7 +153,9 @@ namespace Lykke.Service.NeoApi.DomainServices.Transaction
             var payCoins = payTotal.Select(p => new
             {
                 AssetId = p.Key,
-                Unspents = FindUnspentCoins(unspentOutputs.ToArray(), p.Key, p.Value.Value)
+                Unspents = p.Key == Utils.GasToken 
+                    ? FindUnspentCoins(unspentOutputs.ToArray(), p.Key, p.Value.Value) 
+                    : unspentOutputs.Where(x => x.Output.AssetId == Utils.NeoToken)
             }).Select(x => x).ToDictionary(p => p.AssetId);
 
             var inputSum = payCoins.Values.ToDictionary(p => p.AssetId, p => new
