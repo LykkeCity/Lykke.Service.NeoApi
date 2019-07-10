@@ -175,12 +175,24 @@ namespace Lykke.Service.NeoApi.DomainServices.Transaction
                 }
             }
 
-            var payCoins = payTotal.Select(p => new
+            var payCoins = payTotal.Select(p =>
             {
-                AssetId = p.Key,
-                Unspents = p.Key == Utils.GasToken 
-                    ? FindUnspentCoins(unspentOutputs.ToArray(), p.Key, p.Value.Value) 
-                    : unspentOutputs.Where(x => x.Output.AssetId == Utils.NeoToken)
+                var includedInputs = (p.Key == Utils.GasToken
+                        ? FindUnspentCoins(unspentOutputs.ToArray(), p.Key, p.Value.Value)
+                        : unspentOutputs.Where(x => x.Output.AssetId == Utils.NeoToken))
+                    .ToList();
+
+                var sum = includedInputs.Sum(x => x.Output.Value);
+                if (sum < p.Value.Value)
+                {
+                    throw new NotEnoughFundsException($"Not enough funds for assetId {p.Key}. Requested: {p.Value.Value}, Available: {sum}.");
+                }
+
+                return new
+                {
+                    AssetId = p.Key,
+                    Unspents = includedInputs
+                };
             }).Select(x => x).ToDictionary(p => p.AssetId);
 
             var inputSum = payCoins.Values.ToDictionary(p => p.AssetId, p => new
@@ -212,10 +224,6 @@ namespace Lykke.Service.NeoApi.DomainServices.Transaction
         {
             var unspentsAsset = unspents.Where(p => p.Output.AssetId == assetId).ToArray();
             var sum = unspentsAsset.Sum(p => p.Output.Value);
-            if (sum < amount)
-            {
-                throw new NotEnoughFundsException($"Not enough funds for assetId {assetId}. Requested: {amount}, Available: {sum}.");
-            }
             if (sum == amount) return unspentsAsset;
             var unspentsOrdered = unspentsAsset.OrderByDescending(p => p.Output.Value).ToArray();
             var i = 0;
