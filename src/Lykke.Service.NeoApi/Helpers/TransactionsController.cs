@@ -28,21 +28,18 @@ namespace Lykke.Service.NeoApi.Controllers
         private readonly IOperationRepository _operationRepository;
         private readonly IAddressValidator _addressValidator;
         private readonly ITransactionBroadcaster _transactionBroadcaster;
-        private readonly FeeSettings _feeSettings;
         private readonly IObservableOperationRepository _observableOperationRepository;
         private readonly ITransactionBuilder _transactionBuilder;
 
         public TransactionsController(IAddressValidator addressValidator, 
             IOperationRepository operationRepository, 
             ITransactionBroadcaster transactionBroadcaster, 
-            FeeSettings feeSettings,
             IObservableOperationRepository observableOperationRepository, 
             ITransactionBuilder transactionBuilder)
         {
             _addressValidator = addressValidator;
             _operationRepository = operationRepository;
             _transactionBroadcaster = transactionBroadcaster;
-            _feeSettings = feeSettings;
             _observableOperationRepository = observableOperationRepository;
             _transactionBuilder = transactionBuilder;
         }
@@ -109,12 +106,11 @@ namespace Lykke.Service.NeoApi.Controllers
             switch (request.AssetId)
             {
                 case Constants.Assets.Neo.AssetId:
-                    var fee = aggregate.IsCashout ? _feeSettings.FixedFee : 0;
+
                     tx = await _transactionBuilder.BuildNeoContractTransactionAsync(request.FromAddress,
                         request.ToAddress,
                         amount,
-                        request.IncludeFee,
-                        fee);
+                        request.IncludeFee);
                     break;
                 case Constants.Assets.Gas.AssetId:
                     tx = await _transactionBuilder.BuildGasTransactionAsync(request.FromAddress,

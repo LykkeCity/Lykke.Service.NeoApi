@@ -5,9 +5,9 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Flurl.Http" Version="2.4.1" />
-    <PackageReference Include="NeoModules.NEP6" Version="0.1.2" />
+    <PackageReference Include="NeoModules.NEP6" Version="0.1.4" />
     <PackageReference Include="NeoModules.Rest" Version="2.0.0" />
-    <PackageReference Include="NeoModules.RPC" Version="1.2.0" />
+    <PackageReference Include="NeoModules.RPC" Version="1.2.1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Lykke.Service.NeoApi.Domain\Lykke.Service.NeoApi.Domain.csproj" />

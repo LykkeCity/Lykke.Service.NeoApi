@@ -59,7 +59,9 @@ namespace Lykke.Service.NeoApi.DomainServices.Binders
 
             builder.RegisterInstance(new FeeSettings
             {
-                FixedFee = _settings.FixedFee
+                MaxFreeTransactionSize = _settings.MaxFreeTransactionSize,
+                FeePerExtraByte = _settings.FeePerExtraByte
+
             }).SingleInstance();
         }
     }

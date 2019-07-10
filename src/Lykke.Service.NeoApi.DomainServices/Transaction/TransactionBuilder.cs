@@ -20,20 +20,23 @@ namespace Lykke.Service.NeoApi.DomainServices.Transaction
     {
         private readonly ITransactionOutputsService _transactionOutputsService;
         private readonly IBlockchainProvider _blockchainProvider;
+        private readonly FeeSettings _feeSettings;
 
         public TransactionBuilder(ITransactionOutputsService transactionOutputsService, 
-            IBlockchainProvider blockchainProvider)
+            IBlockchainProvider blockchainProvider, 
+            FeeSettings feeSettings)
         {
             _transactionOutputsService = transactionOutputsService;
             _blockchainProvider = blockchainProvider;
+            _feeSettings = feeSettings;
         }
 
-        public async Task<NeoModules.NEP6.Transactions.Transaction> BuildNeoContractTransactionAsync(string from, string to, decimal amount, bool includeFee, decimal fixedFee)
+        public async Task<NeoModules.NEP6.Transactions.Transaction> BuildNeoContractTransactionAsync(string from,
+            string to,
+            decimal amount,
+            bool includeFee)
         {
-            if (includeFee)
-            {
-                amount -= fixedFee;
-            }
+            var unspentOutputs = (await _transactionOutputsService.GetUnspentOutputsAsync(from)).ToList();
 
             var tx = new ContractTransaction
             {
@@ -45,14 +48,19 @@ namespace Lykke.Service.NeoApi.DomainServices.Transaction
                     {
                         AssetId = Utils.NeoToken,
                         ScriptHash = to.ToScriptHash(),
-                        Value =  BigDecimal.Parse(amount.ToString("F", CultureInfo.InvariantCulture), 
+                        Value =  BigDecimal.Parse(amount.ToString("F", CultureInfo.InvariantCulture),
                             Constants.Assets.Neo.Accuracy)
                     }
                 }.Select(p => p.ToTxOutput()).ToArray(),
                 Witnesses = new Witness[0]
             };
 
-            var unspentOutputs = await _transactionOutputsService.GetUnspentOutputsAsync(from);
+            var fixedFee = CalculcateFee(tx, unspentOutputs, from.ToScriptHash());
+
+            if (includeFee)
+            {
+                amount -= fixedFee;
+            }
 
             tx = MakeTransaction(tx, 
                 unspentOutputs,
@@ -61,6 +69,23 @@ namespace Lykke.Service.NeoApi.DomainServices.Transaction
                 fee: Fixed8.FromDecimal(fixedFee));
 
             return tx;
+        }
+
+        private decimal CalculcateFee(ContractTransaction tx, IEnumerable<Coin> unspentOutputs, UInt160 from)
+        {
+            var filledTx = MakeTransaction(tx, unspentOutputs, from, from, Fixed8.Zero);
+
+            return CalculcateFee(filledTx.Size);
+        }
+
+        private decimal CalculcateFee(int txSize)
+        {
+            if (txSize < _feeSettings.MaxFreeTransactionSize)
+            {
+                return 0;
+            }
+
+            return _feeSettings.FeePerExtraByte * (txSize - _feeSettings.MaxFreeTransactionSize);
         }
 
         public async Task<NeoModules.NEP6.Transactions.Transaction> BuildGasTransactionAsync(string @from, string to, decimal amount)
