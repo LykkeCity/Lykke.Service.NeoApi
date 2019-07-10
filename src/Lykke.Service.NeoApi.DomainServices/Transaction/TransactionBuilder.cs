@@ -31,7 +31,7 @@ namespace Lykke.Service.NeoApi.DomainServices.Transaction
             _feeSettings = feeSettings;
         }
 
-        public async Task<NeoModules.NEP6.Transactions.Transaction> BuildNeoContractTransactionAsync(string from,
+        public async Task<(NeoModules.NEP6.Transactions.Transaction tx, decimal fee)> BuildNeoContractTransactionAsync(string from,
             string to,
             decimal amount,
             bool includeFee)
@@ -55,20 +55,20 @@ namespace Lykke.Service.NeoApi.DomainServices.Transaction
                 Witnesses = new Witness[0]
             };
 
-            var fixedFee = CalculcateFee(tx, unspentOutputs, from.ToScriptHash());
+            var fee = CalculcateFee(tx, unspentOutputs, from.ToScriptHash());
 
             if (includeFee)
             {
-                amount -= fixedFee;
+                amount -= fee;
             }
 
             tx = MakeTransaction(tx, 
                 unspentOutputs,
                 from.ToScriptHash(), 
                 changeAddress: from.ToScriptHash(), 
-                fee: Fixed8.FromDecimal(fixedFee));
+                fee: Fixed8.FromDecimal(fee));
 
-            return tx;
+            return (tx, fee);
         }
 
         private decimal CalculcateFee(ContractTransaction tx, IEnumerable<Coin> unspentOutputs, UInt160 from)

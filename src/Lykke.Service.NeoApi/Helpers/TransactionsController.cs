@@ -87,27 +87,20 @@ namespace Lykke.Service.NeoApi.Controllers
                 return BadRequest(ErrorResponseFactory.Create(ModelState));
             }
             
-            var aggregate = await _operationRepository.GetOrInsert(request.OperationId,
-                () => OperationAggregate.StartNew(request.OperationId,
-                    fromAddress: request.FromAddress,
-                    toAddress: request.ToAddress,
-                    amount: amount,
-                    assetId: request.AssetId,
-                    fee: _feeSettings.FixedFee,
-                    includeFee: request.IncludeFee));
 
-            if (aggregate.IsBroadcasted)
+
+            if ((await _operationRepository.GetOrDefault(request.OperationId))?.IsBroadcasted ?? false)
             {
                 return Conflict();
             }
 
             Transaction tx;
-
+            decimal fee = 0;
             switch (request.AssetId)
             {
                 case Constants.Assets.Neo.AssetId:
 
-                    tx = await _transactionBuilder.BuildNeoContractTransactionAsync(request.FromAddress,
+                    (tx, fee) = await _transactionBuilder.BuildNeoContractTransactionAsync(request.FromAddress,
                         request.ToAddress,
                         amount,
                         request.IncludeFee);
@@ -120,7 +113,16 @@ namespace Lykke.Service.NeoApi.Controllers
                 default:
                     throw new ArgumentException("Unknown switch", nameof(request.AssetId));
             }
-            
+
+            await _operationRepository.GetOrInsert(request.OperationId,
+                () => OperationAggregate.StartNew(request.OperationId,
+                    fromAddress: request.FromAddress,
+                    toAddress: request.ToAddress,
+                    amount: amount,
+                    assetId: request.AssetId,
+                    fee: fee,
+                    includeFee: request.IncludeFee));
+
             return Ok(new BuildTransactionResponse
             {
                 TransactionContext = TransactionSerializer.Serialize(tx, TransactionType.ContractTransaction)
