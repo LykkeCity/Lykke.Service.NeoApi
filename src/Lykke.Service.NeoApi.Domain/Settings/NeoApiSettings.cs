@@ -14,8 +14,12 @@ namespace Lykke.Service.NeoApi.Domain.Settings
 
         public string NodeUrl { get; set; }
 
-        public decimal FixedFee { get; set; }
-        
+        [Optional]
+        public int MaxFreeTransactionSize { get; set; } = 1024;
+
+        [Optional]
+        public long FeePerExtraByte { get; set; } = 1000;
+
         public TimeSpan UpdateBalancesTimerPeriod { get; set; }
 
         public TimeSpan DetectTransactionsTimerPeriod { get; set; }

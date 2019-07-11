@@ -2,6 +2,8 @@
 {
     public class FeeSettings
     {
-        public decimal FixedFee { get; set; }
+        public int MaxFreeTransactionSize { get; set; }
+
+        public long FeePerExtraByte { get; set; }
     }
 }

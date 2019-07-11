@@ -28,21 +28,18 @@ namespace Lykke.Service.NeoApi.Controllers
         private readonly IOperationRepository _operationRepository;
         private readonly IAddressValidator _addressValidator;
         private readonly ITransactionBroadcaster _transactionBroadcaster;
-        private readonly FeeSettings _feeSettings;
         private readonly IObservableOperationRepository _observableOperationRepository;
         private readonly ITransactionBuilder _transactionBuilder;
 
         public TransactionsController(IAddressValidator addressValidator, 
             IOperationRepository operationRepository, 
             ITransactionBroadcaster transactionBroadcaster, 
-            FeeSettings feeSettings,
             IObservableOperationRepository observableOperationRepository, 
             ITransactionBuilder transactionBuilder)
         {
             _addressValidator = addressValidator;
             _operationRepository = operationRepository;
             _transactionBroadcaster = transactionBroadcaster;
-            _feeSettings = feeSettings;
             _observableOperationRepository = observableOperationRepository;
             _transactionBuilder = transactionBuilder;
         }
@@ -90,31 +87,23 @@ namespace Lykke.Service.NeoApi.Controllers
                 return BadRequest(ErrorResponseFactory.Create(ModelState));
             }
             
-            var aggregate = await _operationRepository.GetOrInsert(request.OperationId,
-                () => OperationAggregate.StartNew(request.OperationId,
-                    fromAddress: request.FromAddress,
-                    toAddress: request.ToAddress,
-                    amount: amount,
-                    assetId: request.AssetId,
-                    fee: _feeSettings.FixedFee,
-                    includeFee: request.IncludeFee));
 
-            if (aggregate.IsBroadcasted)
+
+            if ((await _operationRepository.GetOrDefault(request.OperationId))?.IsBroadcasted ?? false)
             {
                 return Conflict();
             }
 
             Transaction tx;
-
+            decimal fee = 0;
             switch (request.AssetId)
             {
                 case Constants.Assets.Neo.AssetId:
-                    var fee = aggregate.IsCashout ? _feeSettings.FixedFee : 0;
-                    tx = await _transactionBuilder.BuildNeoContractTransactionAsync(request.FromAddress,
+
+                    (tx, fee) = await _transactionBuilder.BuildNeoContractTransactionAsync(request.FromAddress,
                         request.ToAddress,
                         amount,
-                        request.IncludeFee,
-                        fee);
+                        request.IncludeFee);
                     break;
                 case Constants.Assets.Gas.AssetId:
                     tx = await _transactionBuilder.BuildGasTransactionAsync(request.FromAddress,
@@ -124,7 +113,16 @@ namespace Lykke.Service.NeoApi.Controllers
                 default:
                     throw new ArgumentException("Unknown switch", nameof(request.AssetId));
             }
-            
+
+            await _operationRepository.GetOrInsert(request.OperationId,
+                () => OperationAggregate.StartNew(request.OperationId,
+                    fromAddress: request.FromAddress,
+                    toAddress: request.ToAddress,
+                    amount: amount,
+                    assetId: request.AssetId,
+                    fee: fee,
+                    includeFee: request.IncludeFee));
+
             return Ok(new BuildTransactionResponse
             {
                 TransactionContext = TransactionSerializer.Serialize(tx, TransactionType.ContractTransaction)

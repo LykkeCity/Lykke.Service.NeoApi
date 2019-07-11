@@ -20,20 +20,23 @@ namespace Lykke.Service.NeoApi.DomainServices.Transaction
     {
         private readonly ITransactionOutputsService _transactionOutputsService;
         private readonly IBlockchainProvider _blockchainProvider;
+        private readonly FeeSettings _feeSettings;
 
         public TransactionBuilder(ITransactionOutputsService transactionOutputsService, 
-            IBlockchainProvider blockchainProvider)
+            IBlockchainProvider blockchainProvider, 
+            FeeSettings feeSettings)
         {
             _transactionOutputsService = transactionOutputsService;
             _blockchainProvider = blockchainProvider;
+            _feeSettings = feeSettings;
         }
 
-        public async Task<NeoModules.NEP6.Transactions.Transaction> BuildNeoContractTransactionAsync(string from, string to, decimal amount, bool includeFee, decimal fixedFee)
+        public async Task<(NeoModules.NEP6.Transactions.Transaction tx, decimal fee)> BuildNeoContractTransactionAsync(string from,
+            string to,
+            decimal amount,
+            bool includeFee)
         {
-            if (includeFee)
-            {
-                amount -= fixedFee;
-            }
+            var unspentOutputs = (await _transactionOutputsService.GetUnspentOutputsAsync(from)).ToList();
 
             var tx = new ContractTransaction
             {
@@ -45,22 +48,44 @@ namespace Lykke.Service.NeoApi.DomainServices.Transaction
                     {
                         AssetId = Utils.NeoToken,
                         ScriptHash = to.ToScriptHash(),
-                        Value =  BigDecimal.Parse(amount.ToString("F", CultureInfo.InvariantCulture), 
+                        Value =  BigDecimal.Parse(amount.ToString("F", CultureInfo.InvariantCulture),
                             Constants.Assets.Neo.Accuracy)
                     }
                 }.Select(p => p.ToTxOutput()).ToArray(),
                 Witnesses = new Witness[0]
             };
 
-            var unspentOutputs = await _transactionOutputsService.GetUnspentOutputsAsync(from);
+            var fee = CalculcateFee(tx, unspentOutputs, from.ToScriptHash());
+
+            if (includeFee)
+            {
+                amount -= fee;
+            }
 
             tx = MakeTransaction(tx, 
                 unspentOutputs,
                 from.ToScriptHash(), 
                 changeAddress: from.ToScriptHash(), 
-                fee: Fixed8.FromDecimal(fixedFee));
+                fee: Fixed8.FromDecimal(fee));
 
-            return tx;
+            return (tx, fee);
+        }
+
+        private decimal CalculcateFee(ContractTransaction tx, IEnumerable<Coin> unspentOutputs, UInt160 from)
+        {
+            var filledTx = MakeTransaction(tx, unspentOutputs, from, from, Fixed8.Zero);
+
+            return CalculcateFee(filledTx.Size);
+        }
+
+        private decimal CalculcateFee(int txSize)
+        {
+            if (txSize < _feeSettings.MaxFreeTransactionSize)
+            {
+                return 0;
+            }
+
+            return _feeSettings.FeePerExtraByte * (txSize - _feeSettings.MaxFreeTransactionSize);
         }
 
         public async Task<NeoModules.NEP6.Transactions.Transaction> BuildGasTransactionAsync(string @from, string to, decimal amount)
@@ -150,10 +175,24 @@ namespace Lykke.Service.NeoApi.DomainServices.Transaction
                 }
             }
 
-            var payCoins = payTotal.Select(p => new
+            var payCoins = payTotal.Select(p =>
             {
-                AssetId = p.Key,
-                Unspents = FindUnspentCoins(unspentOutputs.ToArray(), p.Key, p.Value.Value)
+                var includedInputs = (p.Key == Utils.GasToken
+                        ? FindUnspentCoins(unspentOutputs.ToArray(), p.Key, p.Value.Value)
+                        : unspentOutputs.Where(x => x.Output.AssetId == Utils.NeoToken))
+                    .ToList();
+
+                var sum = includedInputs.Sum(x => x.Output.Value);
+                if (sum < p.Value.Value)
+                {
+                    throw new NotEnoughFundsException($"Not enough funds for assetId {p.Key}. Requested: {p.Value.Value}, Available: {sum}.");
+                }
+
+                return new
+                {
+                    AssetId = p.Key,
+                    Unspents = includedInputs
+                };
             }).Select(x => x).ToDictionary(p => p.AssetId);
 
             var inputSum = payCoins.Values.ToDictionary(p => p.AssetId, p => new
@@ -185,10 +224,6 @@ namespace Lykke.Service.NeoApi.DomainServices.Transaction
         {
             var unspentsAsset = unspents.Where(p => p.Output.AssetId == assetId).ToArray();
             var sum = unspentsAsset.Sum(p => p.Output.Value);
-            if (sum < amount)
-            {
-                throw new NotEnoughFundsException($"Not enough funds for assetId {assetId}. Requested: {amount}, Available: {sum}.");
-            }
             if (sum == amount) return unspentsAsset;
             var unspentsOrdered = unspentsAsset.OrderByDescending(p => p.Output.Value).ToArray();
             var i = 0;
