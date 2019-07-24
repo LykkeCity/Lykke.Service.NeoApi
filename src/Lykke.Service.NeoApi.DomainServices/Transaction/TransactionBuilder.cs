@@ -66,19 +66,19 @@ namespace Lykke.Service.NeoApi.DomainServices.Transaction
                 unspentOutputs,
                 from.ToScriptHash(), 
                 changeAddress: from.ToScriptHash(), 
-                fee: Fixed8.FromDecimal(fee));
+                fee: new Fixed8(fee));
 
             return (tx, fee);
         }
 
-        private decimal CalculcateFee(ContractTransaction tx, IEnumerable<Coin> unspentOutputs, UInt160 from)
+        private long CalculcateFee(ContractTransaction tx, IEnumerable<Coin> unspentOutputs, UInt160 from)
         {
             var filledTx = MakeTransaction(tx, unspentOutputs, from, from, Fixed8.Zero);
 
             return CalculcateFee(filledTx.Size);
         }
 
-        private decimal CalculcateFee(int txSize)
+        private long CalculcateFee(int txSize)
         {
             if (txSize < _feeSettings.MaxFreeTransactionSize)
             {
